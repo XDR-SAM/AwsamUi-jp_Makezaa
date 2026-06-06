@@ -23,9 +23,9 @@ const features = [
   },
   {
     number: "04",
-    title: "Strategy & Support",
-    description: "Ongoing optimization, analytics, and support to help you grow online. From audits to edits, we stay available and communicative.",
-    stats: { value: "24/7", label: "support focus" },
+    title: "AWS & Agent Deployment",
+    description: "We deploy and manage business agents on AWS, including setups for Hermes, OpenClaw, and custom agent runtimes.",
+    stats: { value: "AWS", label: "backed" },
   },
 ];
 

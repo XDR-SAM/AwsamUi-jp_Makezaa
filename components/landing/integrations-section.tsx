@@ -15,6 +15,9 @@ const integrations = [
   { name: "TypeScript", category: "Language" },
   { name: "PostgreSQL", category: "Database" },
   { name: "Docker", category: "DevOps" },
+  { name: "AWS", category: "Cloud" },
+  { name: "EC2 / Lambda", category: "Compute" },
+  { name: "IAM / S3", category: "Infra" },
 ];
 
 export function IntegrationsSection() {
