@@ -21,9 +21,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'COMPUTE - AI Agents for Distributed Computing',
-  description: 'Deploy autonomous AI agents on distributed infrastructure. Offload complex tasks to intelligent workers that run 24/7.',
-  generator: 'v0.app',
+  title: 'Makezaa | Web Development & Digital Solutions',
+  description: 'Makezaa builds fast websites, apps, and digital strategy for businesses. React, Next.js, Node.js — clean code, on time.',
+  generator: 'Makezaa',
 }
 
 export default function RootLayout({

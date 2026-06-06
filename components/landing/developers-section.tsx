@@ -3,21 +3,21 @@
 import { useState, useEffect, useRef } from "react";
 
 const features = [
-  { 
-    title: "TypeScript native", 
-    description: "Full type safety for agent configs and responses."
+  {
+    title: "Clean code",
+    description: "Readable, maintainable implementations with consistent structure.",
   },
-  { 
-    title: "Streaming results", 
-    description: "Watch your agents think and act in real-time."
+  {
+    title: "Modern stack",
+    description: "Next.js, Node.js, and React for durable foundations.",
   },
-  { 
-    title: "Multi-model support", 
-    description: "OpenAI, Anthropic, Mistral, or bring your own."
+  {
+    title: "Fast delivery",
+    description: "Delivery planning focused on minimum reliable increments.",
   },
-  { 
-    title: "Local debugging", 
-    description: "Test agents locally before deploying to cloud."
+  {
+    title: "Long-term support",
+    description: "We stay after launch for fixes and improvements.",
   },
 ];
 
@@ -68,12 +68,12 @@ export function DevelopersSection() {
         >
           <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-6">
             <span className="w-8 h-px bg-foreground/30" />
-            Developer SDK
+            Our Approach
           </span>
           <h2 className="text-6xl md:text-7xl lg:text-[128px] font-display tracking-tight leading-[0.9]">
-            Code your agents.
+            Built with
             <br />
-            <span className="text-muted-foreground">Or let them code.</span>
+            <span className="text-muted-foreground">clarity.</span>
           </h2>
         </div>
 
@@ -84,8 +84,7 @@ export function DevelopersSection() {
           }`}
         >
           <p className="text-xl text-muted-foreground mb-12 leading-relaxed max-w-md">
-            A powerful SDK for building, deploying, and orchestrating AI agents. 
-            Define behaviors in code or natural language.
+            Rely on systematic execution, clean architecture, and modern tooling. We treat every project like a product we'd use ourselves.
           </p>
           <div className="grid grid-cols-2 gap-6">
             {features.map((feature, index) => (

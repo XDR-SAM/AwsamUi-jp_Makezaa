@@ -5,39 +5,24 @@ import { useEffect, useRef, useState } from "react";
 const steps = [
   {
     number: "01",
-    title: "Define",
-    subtitle: "your agent",
-    description: "Describe what your agent should do. Set its capabilities, constraints, and goals in natural language or code.",
-    code: `const researcher = new Agent({
-  role: 'Research Analyst',
-  capabilities: ['web', 'docs', 'api'],
-  memory: true,
-  autonomy: 'full'
-})`,
+    title: "Strategy",
+    subtitle: "& planning",
+    description: "We review your goals, audience, and requirements to create a clear roadmap for your website or digital product.",
+    code: `// discovery call\nconst goals = await brief();\ncrew.plan(goals);`,
   },
   {
     number: "02",
-    title: "Assign",
-    subtitle: "the task",
-    description: "Give your agent a mission. It breaks down complex tasks into steps and executes them autonomously.",
-    code: `await researcher.execute({
-  task: 'Analyze competitor pricing',
-  sources: ['public-data', 'news'],
-  output: 'structured-report',
-  deadline: '2h'
-})`,
+    title: "Design &",
+    subtitle: "development",
+    description: "We craft the UI, then build with clean code and modern tooling. Iterate fast, align on feedback.",
+    code: `const site = await crew.build({\n  stack: ['Next.js', 'Node.js'],\n  design: figmaFile\n});`,
   },
   {
     number: "03",
-    title: "Monitor",
-    subtitle: "& scale",
-    description: "Track progress in real-time. Spin up more agents as needed. Pay only for compute used.",
-    code: `optimus.dashboard({
-  agents: [researcher],
-  metrics: ['tasks', 'latency', 'cost'],
-  alerts: true
-})
-// 847 tasks completed today`,
+    title: "Quality,",
+    subtitle: "then launch",
+    description: "We test across devices, fix issues, and deploy with care so the launch actually ships without surprises.",
+    code: `await crew.review(site);\nawait crew.launch(site);`,
   },
 ];
 

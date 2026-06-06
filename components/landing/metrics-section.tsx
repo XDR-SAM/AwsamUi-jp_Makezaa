@@ -3,27 +3,10 @@
 import { useEffect, useState, useRef } from "react";
 
 const metrics = [
-  { 
-    value: 12847392, 
-    suffix: "", 
-    prefix: "",
-    label: "Tasks completed today",
-    sublabel: "by 23,847 active agents",
-  },
-  { 
-    value: 99, 
-    suffix: ".99%", 
-    prefix: "",
-    label: "Availability",
-    sublabel: "across all regions",
-  },
-  { 
-    value: 340, 
-    suffix: "ms", 
-    prefix: "<",
-    label: "Average execution",
-    sublabel: "p99 latency",
-  },
+  { value: 250, suffix: "+", label: "Clients served", sublabel: "across 15+ countries" },
+  { value: 600, suffix: "+", label: "Websites launched", sublabel: "from landing pages to full platforms" },
+  { value: 99, suffix: ".9%", label: "Uptime guaranteed", sublabel: "for managed hosting and support" },
+  { value: 12, suffix: "h", label: "Average response", sublabel: "to client requests" },
 ];
 
 function AnimatedNumber({ end, suffix = "", prefix = "" }: { end: number; suffix?: string; prefix?: string }) {

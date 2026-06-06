@@ -5,50 +5,45 @@ import { ArrowRight, Check, Zap } from "lucide-react";
 
 const plans = [
   {
-    name: "Explorer",
-    description: "For tinkering and small automations",
-    price: { monthly: 0, annual: 0 },
+    name: "Starter",
+    description: "For simple sites and smaller launches",
+    price: { monthly: 80, annual: 72 },
     features: [
-      "3 concurrent agents",
-      "1,000 tasks/month",
-      "Community support",
-      "Basic logging",
-      "Public integrations",
+      "WordPress website",
+      "Responsive design",
+      "Basic SEO setup",
+      "1 revision round",
+      "7 day delivery",
     ],
-    cta: "Start free",
+    cta: "Start starter",
     highlight: false,
   },
   {
-    name: "Builder",
-    description: "For teams shipping with agents",
-    price: { monthly: 79, annual: 65 },
+    name: "Growth",
+    description: "For full-stack custom builds and growth sites",
+    price: { monthly: 99, annual: 89 },
     features: [
-      "25 concurrent agents",
-      "50,000 tasks/month",
-      "Priority support",
-      "Full audit trails",
-      "Private integrations",
-      "Team workspaces",
-      "Custom agent roles",
+      "Custom Next.js or Node stack",
+      "Performance-first build",
+      "CMS or admin panel",
+      "2 revision rounds",
+      "Analytics ready",
     ],
-    cta: "Start trial",
+    cta: "Start growth",
     highlight: true,
   },
   {
-    name: "Scale",
-    description: "For agent-first organizations",
-    price: { monthly: null, annual: null },
+    name: "Figma to Code",
+    description: "For design files that need real implementation",
+    price: { monthly: 69, annual: 62 },
     features: [
-      "Unlimited agents",
-      "Unlimited tasks",
-      "24/7 dedicated support",
-      "On-premise deployment",
-      "SLA guarantee",
-      "Custom LLM routing",
-      "Advanced security",
-      "Dedicated compute",
+      "From your Figma file",
+      "Pixel aligned output",
+      "Accessible layout",
+      "Clean component structure",
+      "Delivery with notes",
     ],
-    cta: "Contact sales",
+    cta: "Start conversion",
     highlight: false,
   },
 ];
@@ -83,41 +78,28 @@ export function PricingSection() {
             <h2 className={`text-6xl md:text-7xl lg:text-[128px] font-display tracking-tight leading-[0.9] transition-all duration-1000 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}>
-              Pay for
+              Simple,
               <br />
-              <span className="text-stroke">results.</span>
+              <span className="text-stroke">honest rates.</span>
             </h2>
           </div>
-          
-          <div className="lg:col-span-5 relative p-0 h-96 lg:h-auto">
-            {/* Whale image */}
-            <div className={`absolute inset-0 pointer-events-none transition-all duration-1000 delay-100 ${
-              isVisible ? "opacity-100" : "opacity-0"
-            }`}>
-              <img
-                src="/images/whale.png"
-                alt="Organic whale"
-                className="w-full h-full object-contain object-center"
-              />
-            </div>
 
-          </div>
+          <div className="lg:col-span-5 relative p-0 h-96 lg:h-auto" />
         </div>
 
         {/* Pricing cards - Horizontal layout with overlap */}
         <div className="relative">
-          <div className="grid lg:grid-cols-3 gap-4 lg:gap-0">
+          <div className="grid md:grid-cols-3 gap-4 lg:gap-0">
             {plans.map((plan, index) => (
               <div
                 key={plan.name}
                 className={`relative bg-background border transition-all duration-700 ${
-                  plan.highlight 
-                    ? "border-foreground lg:-mx-2 lg:z-10 lg:scale-105" 
-                    : "border-foreground/10 lg:first:-mr-2 lg:last:-ml-2"
+                  plan.highlight
+                    ? "border-foreground md:-mx-2 md:z-10 md:scale-105"
+                    : "border-foreground/10 md:first:-mr-2 md:last:-ml-2"
                 } ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
-                {/* Popular badge */}
                 {plan.highlight && (
                   <div className="absolute -top-4 left-8 right-8 flex justify-center">
                     <span className="inline-flex items-center gap-2 px-4 py-2 bg-foreground text-background text-xs font-mono uppercase tracking-widest">
@@ -139,21 +121,15 @@ export function PricingSection() {
 
                   {/* Price */}
                   <div className="mb-8">
-                    {plan.price.monthly !== null ? (
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-5xl lg:text-6xl font-display">
-                          ${isAnnual ? plan.price.annual : plan.price.monthly}
-                        </span>
-                        <span className="text-muted-foreground text-sm">/month</span>
-                      </div>
-                    ) : (
-                      <span className="text-4xl font-display">Custom</span>
-                    )}
-                    {plan.price.monthly !== null && plan.price.monthly > 0 && (
-                      <p className="text-xs text-muted-foreground mt-2 font-mono">
-                        {isAnnual ? "billed annually" : "billed monthly"}
-                      </p>
-                    )}
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-5xl lg:text-6xl font-display">
+                        ${isAnnual ? plan.price.annual : plan.price.monthly}
+                      </span>
+                      <span className="text-muted-foreground text-sm">/month</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2 font-mono">
+                      {isAnnual ? "billed annually" : "billed monthly"}
+                    </p>
                   </div>
 
                   {/* Features */}
@@ -190,20 +166,17 @@ export function PricingSection() {
           <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
             <span className="flex items-center gap-2">
               <Check className="w-4 h-4 text-[#eca8d6]" />
-              Encrypted execution
+              Clear scope
             </span>
             <span className="flex items-center gap-2">
               <Check className="w-4 h-4 text-[#eca8d6]" />
-              Full audit logs
+              Clean handoff
             </span>
             <span className="flex items-center gap-2">
               <Check className="w-4 h-4 text-[#eca8d6]" />
-              Multi-model routing
+              Support window
             </span>
           </div>
-          <a href="#" className="text-sm underline underline-offset-4 hover:text-foreground transition-colors">
-            Compare all features
-          </a>
         </div>
       </div>
 
