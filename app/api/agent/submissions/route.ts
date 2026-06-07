@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const AGENT_TOKEN = process.env.MAKEZAA_AGENT_TOKEN ?? '';
 
+function unauthorized(message: string, hint?: string, status = 401) {
+  return NextResponse.json(
+    { error: message, ...(hint ? { hint } : {}) },
+    { status }
+  );
+}
+
 function assertAgentToken(request: NextRequest) {
   const header = request.headers.get('x-makezaa-agent-token') ?? '';
   if (!AGENT_TOKEN) return { ok: false as const, reason: 'not configured', hint: 'Set MAKEZAA_AGENT_TOKEN in the server environment' };
@@ -11,7 +18,7 @@ function assertAgentToken(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   const check = assertAgentToken(request);
-  if (!check.ok) return unauthori... check.reason, 'hint' in check ? check.hint : undefined, 'reason' in check && check.reason === 'not configured' ? 500 : 401);
+  if (!check.ok) return unauthorized(check.reason, 'hint' in check ? check.hint : undefined, check.reason === 'not configured' ? 500 : 401);
 
   try {
     const { searchParams } = new URL(request.url);
@@ -37,16 +44,13 @@ export async function GET(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   const check = assertAgentToken(request);
-  if (!check.ok) return unauthorized(check.reason, 'hint' in check ? check.hint : undefined, 'reason' in check && check.reason === "not configured' ? 500 : 401);
-  } else {
-    return unauthorized(check.reason, check.hint);
-  }
-}
+  if (!check.ok) return unauthorized(check.reason, 'hint' in check ? check.hint : undefined, check.reason === 'not configured' ? 500 : 401);
 
-export async function DELETE(request: NextRequest) {
-  const check = assertAgentToken(request);
-  if (!check.ok) return unauthorized(check.reason, check.hint, check.reason === 'not configured' ? 500 : 401);
   try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    if (!id) return NextResponse.json({ error: 'id is required' }, { status: 400 });
+
     const { deleteSubmission } = await import('@/lib/submissions');
     await deleteSubmission(id);
     return new NextResponse(null, { status: 204 });
