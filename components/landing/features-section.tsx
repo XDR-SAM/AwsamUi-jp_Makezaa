@@ -149,7 +149,7 @@ export function FeaturesSection() {
     <section
       id="features"
       ref={sectionRef}
-      className="relative py-24 lg:py-32 overflow-hidden"
+      className="relative py-24 lg:py-32 overflow-hidden scroll-mt-28"
     >
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
         {/* Header - Full width with diagonal layout */}

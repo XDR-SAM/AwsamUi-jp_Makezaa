@@ -1,25 +1,30 @@
 import { createAdminClient } from "@/utils/supabase/admin";
-import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
+import { createPublicClient } from "@/utils/supabase/public";
 import type { Post, PostInput } from "./types";
 
 // --- PUBLIC (respects RLS) ---
 
 export async function getPublishedPosts(): Promise<Post[]> {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("posts")
     .select("*")
     .eq("published", true)
     .order("created_at", { ascending: false });
-  if (error) throw error;
-  return data as Post[];
+  if (error) {
+    console.error("[blog] getPublishedPosts:", error.message);
+    return [];
+  }
+  return (data as Post[]) ?? [];
+}
+
+export async function getRecentPosts(limit = 3): Promise<Post[]> {
+  const posts = await getPublishedPosts();
+  return posts.slice(0, limit);
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("posts")
     .select("*")

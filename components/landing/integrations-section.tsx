@@ -39,7 +39,7 @@ export function IntegrationsSection() {
   }, []);
 
   return (
-    <section id="integrations" ref={sectionRef} className="relative overflow-hidden">
+    <section id="integrations" ref={sectionRef} className="relative overflow-hidden scroll-mt-28">
 
       {/* Header */}
       <div className="relative z-10 pt-32 lg:pt-40 text-center">

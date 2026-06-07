@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { LeadForm } from "@/components/landing/lead-form";
+import { contactHref } from "@/lib/nav-links";
 
 export function CtaSection() {
   const [isVisible, setIsVisible] = useState(false);
@@ -45,39 +46,27 @@ export function CtaSection() {
             }}
           />
 
-          <div id="book-meeting" className="relative z-10 px-8 lg:px-16 py-16 lg:py-24">
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
-              <div className="flex-1">
-                <h2 className="text-6xl md:text-7xl lg:text-[72px] font-display tracking-tight mb-8 leading-[0.95]">
+          <div id="book-meeting" className="relative z-10 px-8 lg:px-16 py-16 lg:py-24 scroll-mt-28">
+            <div className="flex flex-col lg:flex-row items-start justify-between gap-12">
+              <div className="flex-1 lg:max-w-md">
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-display tracking-tight mb-6 leading-[0.95]">
                   Ready to start
                   <br />
                   your next project?
                 </h2>
-
-                <p className="text-xl text-muted-foreground mb-12 leading-relaxed max-w-xl">
-                  Tell us what you need. We'll reply with a clear plan and timeline.
+                <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
+                  Book a free 30-minute call. Tell us what you need — we&apos;ll reply with a clear plan and timeline.
                 </p>
+                <p className="text-sm text-muted-foreground">
+                  Prefer email?{' '}
+                  <Link href={contactHref} className="text-foreground underline underline-offset-4 hover:opacity-80">
+                    Go to contact page
+                  </Link>
+                </p>
+              </div>
 
-                <div className="flex flex-col sm:flex-row items-start gap-4">
-                  <a href="mailto:hello@makezaa.com">
-                    <Button
-                      size="lg"
-                      className="bg-foreground hover:bg-foreground/90 text-background px-8 h-14 text-base rounded-full group"
-                    >
-                      Book a free meeting
-                      <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
-                    </Button>
-                  </a>
-                  <a href="#contact">
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="h-14 px-8 text-base rounded-full border-foreground/20 hover:bg-foreground/5"
-                    >
-                      Contact us
-                    </Button>
-                  </a>
-                </div>
+              <div className="w-full lg:max-w-md">
+                <LeadForm type="meeting" compact />
               </div>
             </div>
           </div>

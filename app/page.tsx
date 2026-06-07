@@ -8,11 +8,22 @@ import { IntegrationsSection } from "@/components/landing/integrations-section";
 import { SecuritySection } from "@/components/landing/security-section";
 import { DevelopersSection } from "@/components/landing/developers-section";
 import { TestimonialsSection } from "@/components/landing/testimonials-section";
+import { ProjectsPreviewSection } from "@/components/landing/projects-preview-section";
+import { BlogPreviewSection } from "@/components/landing/blog-preview-section";
 import { PricingSection } from "@/components/landing/pricing-section";
 import { CtaSection } from "@/components/landing/cta-section";
 import { FooterSection } from "@/components/landing/footer-section";
+import { getRecentPosts } from "@/lib/blog";
+import { getRecentProjects } from "@/lib/projects";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const [posts, projects] = await Promise.all([
+    getRecentPosts(3),
+    getRecentProjects(3),
+  ]);
+
   return (
     <main className="relative min-h-screen overflow-x-hidden">
       <Navigation />
@@ -24,7 +35,9 @@ export default function Home() {
       <IntegrationsSection />
       <SecuritySection />
       <DevelopersSection />
+      <ProjectsPreviewSection projects={projects} />
       <TestimonialsSection />
+      <BlogPreviewSection posts={posts} />
       <PricingSection />
       <CtaSection />
       <FooterSection />

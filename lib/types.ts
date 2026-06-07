@@ -30,3 +30,17 @@ export type Project = {
 };
 
 export type ProjectInput = Omit<Project, "id" | "created_at" | "updated_at">;
+
+export type ContactSubmission = {
+  id: string;
+  type: "meeting" | "contact";
+  name: string;
+  email: string;
+  company: string | null;
+  message: string | null;
+  preferred_date: string | null;
+  preferred_time: string | null;
+  created_at: string;
+};
+
+export type SubmissionType = ContactSubmission["type"];

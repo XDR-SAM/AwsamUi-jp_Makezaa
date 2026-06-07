@@ -203,4 +203,21 @@
     50%  { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
   }
+
+  .cms-content {
+    @apply text-foreground/90 text-base leading-relaxed space-y-4;
+  }
+  .cms-content h1 { @apply text-3xl font-semibold text-foreground mt-8 mb-4; }
+  .cms-content h2 { @apply text-2xl font-semibold text-foreground mt-8 mb-3; }
+  .cms-content h3 { @apply text-xl font-semibold text-foreground mt-6 mb-2; }
+  .cms-content p { @apply text-muted-foreground leading-relaxed; }
+  .cms-content a { @apply text-foreground underline underline-offset-4 hover:opacity-80; }
+  .cms-content ul { @apply list-disc pl-6 space-y-1 text-muted-foreground; }
+  .cms-content ol { @apply list-decimal pl-6 space-y-1 text-muted-foreground; }
+  .cms-content blockquote { @apply border-l-2 border-border pl-4 italic text-muted-foreground; }
+  .cms-content code { @apply font-mono text-sm bg-secondary px-1.5 py-0.5 rounded; }
+  .cms-content pre { @apply bg-secondary rounded-xl p-4 overflow-x-auto text-sm font-mono; }
+  .cms-content pre code { @apply bg-transparent p-0; }
+  .cms-content img { @apply rounded-xl border border-border max-w-full; }
+  .cms-content hr { @apply border-border my-8; }
 }

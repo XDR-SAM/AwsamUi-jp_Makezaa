@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { ImageUploader } from './image-uploader';
 import { RichEditor } from './rich-editor';
 import type { Post } from '@/lib/types';
-import { Loader2, Save, Eye, EyeOff, Tag, X } from 'lucide-react';
+import { Loader2, Save, Eye, EyeOff, Tag, X, Globe, ExternalLink } from 'lucide-react';
 
 interface PostEditorProps {
   post?: Post;
@@ -27,10 +28,9 @@ export function PostEditor({ post }: PostEditorProps) {
   const [tags, setTags] = useState<string[]>(post?.tags ?? []);
   const [tagInput, setTagInput] = useState('');
   const [published, setPublished] = useState(post?.published ?? false);
-  const [saving, setSaving] = useState(false);
+  const [saving, setSaving] = useState<'draft' | 'publish' | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Auto-generate slug from title (new posts only)
   useEffect(() => {
     if (!isEdit && title) setSlug(slugify(title));
   }, [title, isEdit]);
@@ -46,10 +46,10 @@ export function PostEditor({ post }: PostEditorProps) {
 
   const removeTag = (tag: string) => setTags(prev => prev.filter(t => t !== tag));
 
-  const handleSave = async (asDraft = false) => {
+  const handleSave = async (publish: boolean) => {
     if (!title.trim()) { setError('Title is required'); return; }
     if (!slug.trim()) { setError('Slug is required'); return; }
-    setSaving(true);
+    setSaving(publish ? 'publish' : 'draft');
     setError(null);
 
     const payload = {
@@ -59,7 +59,7 @@ export function PostEditor({ post }: PostEditorProps) {
       content: content || null,
       cover_image: coverImage || null,
       tags: tags.length ? tags : null,
-      published: asDraft ? false : published,
+      published: publish,
     };
 
     try {
@@ -71,29 +71,60 @@ export function PostEditor({ post }: PostEditorProps) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Save failed');
+      setPublished(publish);
       router.push('/admin/posts');
       router.refresh();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Save failed');
     } finally {
-      setSaving(false);
+      setSaving(null);
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      {/* Status bar */}
+      <div className={`flex items-center justify-between px-5 py-3 rounded-xl border ${
+        published
+          ? 'bg-emerald-500/10 border-emerald-500/30'
+          : 'bg-zinc-900/60 border-zinc-800'
+      }`}>
+        <div className="flex items-center gap-2">
+          {published ? (
+            <>
+              <Globe size={16} className="text-emerald-400" />
+              <span className="text-sm font-medium text-emerald-400">Live on site</span>
+              <span className="text-xs text-emerald-400/60">— visible at /blog/{slug || '…'}</span>
+            </>
+          ) : (
+            <>
+              <EyeOff size={16} className="text-zinc-500" />
+              <span className="text-sm font-medium text-zinc-400">Draft</span>
+              <span className="text-xs text-zinc-600">— not visible on /blog until you publish</span>
+            </>
+          )}
+        </div>
+        {published && slug && (
+          <Link
+            href={`/blog/${slug}`}
+            target="_blank"
+            className="flex items-center gap-1.5 text-xs text-emerald-400 hover:text-emerald-300 transition-colors"
+          >
+            View post <ExternalLink size={12} />
+          </Link>
+        )}
+      </div>
+
       {error && (
         <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
           {error}
         </div>
       )}
 
-      {/* Cover Image */}
       <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-5">
         <ImageUploader value={coverImage} onChange={setCoverImage} label="Cover Image" />
       </div>
 
-      {/* Title & Slug */}
       <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-5 space-y-4">
         <div>
           <label className="block text-sm font-medium text-zinc-300 mb-1.5">Title *</label>
@@ -128,13 +159,11 @@ export function PostEditor({ post }: PostEditorProps) {
         </div>
       </div>
 
-      {/* Content */}
       <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-5 space-y-2">
         <label className="block text-sm font-medium text-zinc-300">Content</label>
         <RichEditor content={content} onChange={setContent} placeholder="Write your post content here…" />
       </div>
 
-      {/* Tags */}
       <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-5 space-y-3">
         <label className="block text-sm font-medium text-zinc-300 flex items-center gap-1.5">
           <Tag size={14} /> Tags
@@ -158,37 +187,34 @@ export function PostEditor({ post }: PostEditorProps) {
         />
       </div>
 
-      {/* Actions */}
+      {/* Actions — two explicit buttons */}
       <div className="flex items-center justify-between bg-zinc-900/60 border border-zinc-800 rounded-2xl p-5">
         <button
           type="button"
-          onClick={() => setPublished(prev => !prev)}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-all duration-200 ${
-            published
-              ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/25'
-              : 'bg-zinc-800/60 border-zinc-700 text-zinc-400 hover:text-zinc-200'
-          }`}
+          onClick={() => router.push('/admin/posts')}
+          className="px-4 py-2 text-sm text-zinc-400 hover:text-zinc-200 transition-colors"
         >
-          {published ? <Eye size={14} /> : <EyeOff size={14} />}
-          {published ? 'Published' : 'Draft'}
+          Cancel
         </button>
 
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => router.push('/admin/posts')}
-            className="px-4 py-2 text-sm text-zinc-400 hover:text-zinc-200 transition-colors"
+            onClick={() => handleSave(false)}
+            disabled={saving !== null}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium border border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100 transition-colors disabled:opacity-50"
           >
-            Cancel
+            {saving === 'draft' ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+            Save as Draft
           </button>
           <button
             type="button"
-            onClick={() => handleSave()}
-            disabled={saving}
-            className="flex items-center gap-2 px-5 py-2 bg-zinc-100 hover:bg-white text-zinc-900 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+            onClick={() => handleSave(true)}
+            disabled={saving !== null}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold bg-emerald-500 hover:bg-emerald-400 text-white transition-colors disabled:opacity-50"
           >
-            {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-            {isEdit ? 'Save Changes' : published ? 'Publish Post' : 'Save Draft'}
+            {saving === 'publish' ? <Loader2 size={14} className="animate-spin" /> : <Eye size={14} />}
+            {published ? 'Update & Keep Live' : 'Publish Post'}
           </button>
         </div>
       </div>

@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { ImageUploader } from './image-uploader';
 import { RichEditor } from './rich-editor';
 import type { Project } from '@/lib/types';
-import { Loader2, Save, Eye, EyeOff, Star, X, ExternalLink, Github } from 'lucide-react';
+import { Loader2, Save, Eye, EyeOff, Star, X, ExternalLink, Github, Globe } from 'lucide-react';
 
 interface ProjectEditorProps {
   project?: Project;
@@ -30,7 +31,7 @@ export function ProjectEditor({ project }: ProjectEditorProps) {
   const [githubUrl, setGithubUrl] = useState(project?.github_url ?? '');
   const [featured, setFeatured] = useState(project?.featured ?? false);
   const [published, setPublished] = useState(project?.published ?? false);
-  const [saving, setSaving] = useState(false);
+  const [saving, setSaving] = useState<'draft' | 'publish' | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -48,10 +49,10 @@ export function ProjectEditor({ project }: ProjectEditorProps) {
 
   const removeTech = (tech: string) => setTechStack(prev => prev.filter(t => t !== tech));
 
-  const handleSave = async () => {
+  const handleSave = async (publish: boolean) => {
     if (!title.trim()) { setError('Title is required'); return; }
     if (!slug.trim()) { setError('Slug is required'); return; }
-    setSaving(true);
+    setSaving(publish ? 'publish' : 'draft');
     setError(null);
 
     const payload = {
@@ -64,7 +65,7 @@ export function ProjectEditor({ project }: ProjectEditorProps) {
       live_url: liveUrl.trim() || null,
       github_url: githubUrl.trim() || null,
       featured,
-      published,
+      published: publish,
     };
 
     try {
@@ -76,29 +77,59 @@ export function ProjectEditor({ project }: ProjectEditorProps) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Save failed');
+      setPublished(publish);
       router.push('/admin/projects');
       router.refresh();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Save failed');
     } finally {
-      setSaving(false);
+      setSaving(null);
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      <div className={`flex items-center justify-between px-5 py-3 rounded-xl border ${
+        published
+          ? 'bg-emerald-500/10 border-emerald-500/30'
+          : 'bg-zinc-900/60 border-zinc-800'
+      }`}>
+        <div className="flex items-center gap-2">
+          {published ? (
+            <>
+              <Globe size={16} className="text-emerald-400" />
+              <span className="text-sm font-medium text-emerald-400">Live on site</span>
+              <span className="text-xs text-emerald-400/60">— visible at /projects/{slug || '…'}</span>
+            </>
+          ) : (
+            <>
+              <EyeOff size={16} className="text-zinc-500" />
+              <span className="text-sm font-medium text-zinc-400">Draft</span>
+              <span className="text-xs text-zinc-600">— not visible on /projects until you publish</span>
+            </>
+          )}
+        </div>
+        {published && slug && (
+          <Link
+            href={`/projects/${slug}`}
+            target="_blank"
+            className="flex items-center gap-1.5 text-xs text-emerald-400 hover:text-emerald-300 transition-colors"
+          >
+            View project <ExternalLink size={12} />
+          </Link>
+        )}
+      </div>
+
       {error && (
         <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
           {error}
         </div>
       )}
 
-      {/* Cover Image */}
       <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-5">
         <ImageUploader value={coverImage} onChange={setCoverImage} label="Project Cover Image" />
       </div>
 
-      {/* Title, Slug, Description */}
       <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-5 space-y-4">
         <div>
           <label className="block text-sm font-medium text-zinc-300 mb-1.5">Title *</label>
@@ -133,7 +164,6 @@ export function ProjectEditor({ project }: ProjectEditorProps) {
         </div>
       </div>
 
-      {/* Links */}
       <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-5 space-y-4">
         <h3 className="text-sm font-medium text-zinc-300">Project Links</h3>
         <div>
@@ -160,13 +190,11 @@ export function ProjectEditor({ project }: ProjectEditorProps) {
         </div>
       </div>
 
-      {/* Content */}
       <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-5 space-y-2">
         <label className="block text-sm font-medium text-zinc-300">Project Details</label>
         <RichEditor content={content} onChange={setContent} placeholder="Describe the project in detail — challenges, solutions, technologies used…" />
       </div>
 
-      {/* Tech Stack */}
       <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-5 space-y-3">
         <label className="block text-sm font-medium text-zinc-300">Tech Stack</label>
         <div className="flex flex-wrap gap-2">
@@ -188,51 +216,48 @@ export function ProjectEditor({ project }: ProjectEditorProps) {
         />
       </div>
 
-      {/* Actions */}
+      <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-5">
+        <button
+          type="button"
+          onClick={() => setFeatured(prev => !prev)}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-all duration-200 ${
+            featured
+              ? 'bg-amber-500/15 border-amber-500/40 text-amber-400 hover:bg-amber-500/25'
+              : 'bg-zinc-800/60 border-zinc-700 text-zinc-400 hover:text-zinc-200'
+          }`}
+        >
+          <Star size={14} className={featured ? 'fill-amber-400' : ''} />
+          {featured ? 'Featured on homepage' : 'Mark as featured'}
+        </button>
+      </div>
+
       <div className="flex items-center justify-between bg-zinc-900/60 border border-zinc-800 rounded-2xl p-5">
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => setFeatured(prev => !prev)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-all duration-200 ${
-              featured
-                ? 'bg-amber-500/15 border-amber-500/40 text-amber-400 hover:bg-amber-500/25'
-                : 'bg-zinc-800/60 border-zinc-700 text-zinc-400 hover:text-zinc-200'
-            }`}
-          >
-            <Star size={14} className={featured ? 'fill-amber-400' : ''} />
-            {featured ? 'Featured' : 'Not Featured'}
-          </button>
-          <button
-            type="button"
-            onClick={() => setPublished(prev => !prev)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-all duration-200 ${
-              published
-                ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/25'
-                : 'bg-zinc-800/60 border-zinc-700 text-zinc-400 hover:text-zinc-200'
-            }`}
-          >
-            {published ? <Eye size={14} /> : <EyeOff size={14} />}
-            {published ? 'Published' : 'Draft'}
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => router.push('/admin/projects')}
+          className="px-4 py-2 text-sm text-zinc-400 hover:text-zinc-200 transition-colors"
+        >
+          Cancel
+        </button>
 
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => router.push('/admin/projects')}
-            className="px-4 py-2 text-sm text-zinc-400 hover:text-zinc-200 transition-colors"
+            onClick={() => handleSave(false)}
+            disabled={saving !== null}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium border border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100 transition-colors disabled:opacity-50"
           >
-            Cancel
+            {saving === 'draft' ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+            Save as Draft
           </button>
           <button
             type="button"
-            onClick={handleSave}
-            disabled={saving}
-            className="flex items-center gap-2 px-5 py-2 bg-zinc-100 hover:bg-white text-zinc-900 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+            onClick={() => handleSave(true)}
+            disabled={saving !== null}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold bg-emerald-500 hover:bg-emerald-400 text-white transition-colors disabled:opacity-50"
           >
-            {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-            {isEdit ? 'Save Changes' : published ? 'Publish Project' : 'Save Draft'}
+            {saving === 'publish' ? <Loader2 size={14} className="animate-spin" /> : <Eye size={14} />}
+            {published ? 'Update & Keep Live' : 'Publish Project'}
           </button>
         </div>
       </div>

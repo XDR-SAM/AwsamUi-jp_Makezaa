@@ -43,6 +43,7 @@ const Divider = () => <div className="w-px h-5 bg-zinc-700 mx-0.5 self-center" /
 
 export function RichEditor({ content, onChange, placeholder }: RichEditorProps) {
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit,
       Image.configure({ inline: false, allowBase64: true }),
