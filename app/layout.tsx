@@ -24,16 +24,21 @@ export const metadata: Metadata = {
   title: 'Makezaa | Web Development & Digital Solutions',
   description: 'Makezaa builds fast websites, apps, and digital strategy for businesses. React, Next.js, Node.js — clean code, on time.',
   generator: 'Makezaa',
+  icons: {
+    icon: '/favicon.png',
+    shortcut: '/favicon.png',
+    apple: '/favicon.png',
+  },
 }
 
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
   "name": "Makezaa",
-  "image": "https://makezaa.com/logo.png",
+  "image": "https://makezaa.com/favicon.png",
   "@id": "https://makezaa.com",
   "url": "https://makezaa.com",
-  "telephone": ["+8801570200990", "+8801570297033"],
+  "telephone": ["+880****0990", "+880****7033"],
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "351-3, Dhanmondi",
