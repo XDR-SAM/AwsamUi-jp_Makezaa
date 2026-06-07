@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /private/
+
+Sitemap: https://makezaa.com/sitemap.xml
+Sitemap: https://www.makezaa.com/sitemap.xml
