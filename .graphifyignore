@@ -1,0 +1,14 @@
+*.md
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.svg
+*.ico
+*.mp4
+public/
+node_modules/
+.next/
+dist/
+build/

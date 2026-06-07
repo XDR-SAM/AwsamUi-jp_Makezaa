@@ -181,11 +181,11 @@ export function FeaturesSection() {
         </div>
 
         {/* Bento Grid Layout */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-12 gap-4 lg:gap-6">
+        <div className="grid grid-cols-12 gap-4 lg:gap-6">
           {features.map((feature, index) => (
             <div
               key={feature.title}
-              className={`relative bg-black border border-foreground/10 overflow-hidden group transition-all duration-700 flex flex-col ${
+              className={`col-span-6 md:col-span-4 lg:col-span-3 relative bg-black border border-foreground/10 overflow-hidden group transition-all duration-700 flex flex-col ${
                 isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
               }`}
               style={{ transitionDelay: `${index * 100}ms` }}
