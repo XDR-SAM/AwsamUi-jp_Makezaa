@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
       nonce = cookieStore.get(`makezaa_consent_${form.request}`)?.value;
     if (!nonce)
       throw new AgentError(
-        'Authorization expired. Reconnect from your agent.',
+        'Consent cookie missing. Start the connection again in this browser.',
         403,
       );
     const db = createAdminClient();
@@ -76,9 +76,11 @@ export async function POST(request: NextRequest) {
       .eq('csrf_hash', hash(nonce))
       .gt('expires_at', new Date().toISOString())
       .maybeSingle();
-    if (error || !pending)
+    if (error)
+      throw new AgentError('Connection request lookup failed. Please retry.', 503);
+    if (!pending)
       throw new AgentError(
-        'Authorization expired. Reconnect from your agent.',
+        'Connection request expired or belongs to another browser. Reconnect from your agent.',
         403,
       );
     const { params, scopes: requested } = await validateAuthorization(
@@ -97,11 +99,14 @@ export async function POST(request: NextRequest) {
       p_scopes: scopes,
       p_allow: form.decision === 'allow',
     });
-    if (e)
+    if (e) {
+      // Codes identify configuration failures without logging nonce, code or user data.
+      console.warn('Makezaa consent transaction failed', { code: e.code });
       throw new AgentError(
-        'Authorization expired. Reconnect from your agent.',
+        'Consent could not be completed. Reconnect from your agent.',
         403,
       );
+    }
     const destination = callback(
       params,
       form.decision === 'allow' ? { code } : { error: 'access_denied' },

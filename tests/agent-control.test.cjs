@@ -97,12 +97,12 @@ test('OAuth consent returns 401 for a missing admin session and keeps origin che
   assert.equal(adminChecks, 1);
 });
 const key = 'mza_abcdefghijklmnopqrstuvwxyz0123456789';
-function consentFixture({ nonce = 'test-nonce', pending = true, rpcError = null } = {}) {
+function consentFixture({ nonce = 'test-nonce', pending = true, rpcError = null, lookupError = null } = {}) {
   const calls = [];
   const params = { client_id: 'test-client', redirect_uri: 'http://127.0.0.1:62899/callback', state: 'client-state' };
   const query = {
     select() { return this; }, eq() { return this; }, gt() { return this; },
-    async maybeSingle() { return { data: pending ? { params } : null, error: null }; },
+    async maybeSingle() { return { data: pending ? { params } : null, error: lookupError }; },
   };
   function response(body, init) {
     const result = new Response(body, init);
@@ -157,6 +157,19 @@ test('fetch consent cannot skip the bound nonce, expiry, requested scopes or ato
   const f = consentFixture();
   assert.equal((await f.post('application/json', 'allow', 'posts:publish')).status, 400);
   assert.equal(f.calls.length, 0);
+});
+test('consent distinguishes missing browser cookies, expired requests and database outages', async () => {
+  for (const [options, status, message] of [
+    [{ nonce: null }, 403, /Consent cookie missing/],
+    [{ pending: false }, 403, /expired or belongs to another browser/],
+    [{ lookupError: { message: 'offline' } }, 503, /lookup failed/],
+  ]) {
+    const f = consentFixture(options);
+    const result = await f.post();
+    assert.equal(result.status, status);
+    assert.match((await result.json()).error, message);
+    assert.equal(f.calls.length, 0);
+  }
 });
 const admin = { id: 'admin', app_metadata: { role: 'admin' } };
 function authFixture(credential, owner = admin, dbError = null) {
