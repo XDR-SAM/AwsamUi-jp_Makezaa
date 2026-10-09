@@ -26,7 +26,8 @@ export default function AdminLoginPage() {
         await supabase.auth.signOut();
         throw new Error('This account does not have admin access.');
       }
-      router.push('/admin');
+      const next = new URLSearchParams(window.location.search).get('next');
+      router.push(next?.startsWith('/admin/agents/authorize?request=') ? next : '/admin');
       router.refresh();
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Unable to sign in. Please try again.');
