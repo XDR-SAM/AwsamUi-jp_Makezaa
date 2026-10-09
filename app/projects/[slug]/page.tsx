@@ -5,17 +5,16 @@ import { FooterSection } from '@/components/landing/footer-section';
 import { CmsContent } from '@/components/cms-content';
 import { getProjectBySlug, getPublishedProjects } from '@/lib/projects';
 import { ArrowLeft, ArrowRight, ExternalLink, Github, Star } from 'lucide-react';
+import { JsonLd } from '@/components/json-ld';
+import { projectMetadata, projectSchema, PRIVATE_ROBOTS } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
-  if (!project) return { title: 'Project Not Found | Makezaa' };
-  return {
-    title: `${project.title} | Makezaa Projects`,
-    description: project.description ?? undefined,
-  };
+  if (!project) return { title: 'Project Not Found', robots: PRIVATE_ROBOTS };
+  return projectMetadata(project);
 }
 
 export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -28,6 +27,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
 
   return (
     <main className="relative min-h-screen overflow-x-hidden">
+      <JsonLd data={projectSchema(project)} />
       <Navigation />
       <article className="pt-32 pb-20 px-6">
         <div className="max-w-3xl mx-auto">

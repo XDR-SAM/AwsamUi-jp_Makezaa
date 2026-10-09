@@ -3,13 +3,11 @@ import { Navigation } from '@/components/landing/navigation';
 import { FooterSection } from '@/components/landing/footer-section';
 import { getPublishedPosts } from '@/lib/blog';
 import { Calendar, ArrowRight, ArrowLeft } from 'lucide-react';
+import { pageMetadata, previewImage } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = {
-  title: 'Blog | Makezaa',
-  description: 'Insights on web development, digital strategy, and building products that ship.',
-};
+export const metadata = pageMetadata('Blog', 'Updates, tutorials, and insights on web development, AI, and digital strategy from the Makezaa team.', '/blog', previewImage('site', 'blog'));
 
 export default async function BlogPage() {
   const posts = await getPublishedPosts();
