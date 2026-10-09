@@ -48,6 +48,8 @@ test('article schema preserves truthful dates and images, project schema stays C
   assert.equal(article.image, 'https://example.com/cover.png');
   assert.equal(article.datePublished, post.created_at);
   assert.equal(article.author.name, 'Makezaa');
+  assert.equal(article.author['@id'], schema['@graph'][0]['@id']);
+  assert.equal(article.author.url, schema['@graph'][0].url, 'one organization identity must use one URL');
   assert.equal(schema['@graph'].find(x => x['@type'] === 'BreadcrumbList').itemListElement.length, 3);
   const project = seo.projectSchema({ ...post, description: null, tech_stack: ['Next.js'] });
   assert.equal(project['@graph'][1]['@type'], 'CreativeWork');

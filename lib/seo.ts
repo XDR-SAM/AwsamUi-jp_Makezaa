@@ -63,7 +63,7 @@ export function postMetadata(post: Post): Metadata {
   const description = descriptionText(post.excerpt, post.content, `Read ${plainText(post.title)} on the Makezaa blog.`);
   const metadata = withCover(pageMetadata(plainText(post.title), description, contentPath('blog', post.slug), previewImage('blog', post.slug)), post.cover_image, post.title);
   return { ...metadata, openGraph: { ...metadata.openGraph, type: 'article',
-    publishedTime: post.created_at, modifiedTime: post.updated_at, authors: [absoluteUrl('/blog')], tags: post.tags ?? [] } };
+    publishedTime: post.created_at, modifiedTime: post.updated_at, authors: [absoluteUrl('/')], tags: post.tags ?? [] } };
 }
 
 export function projectMetadata(project: Project): Metadata {
@@ -96,7 +96,7 @@ export function postSchema(post: Post) {
     '@type': 'BlogPosting', '@id': `${url}#article`, url, headline: plainText(post.title),
     description: descriptionText(post.excerpt, post.content, `Read ${plainText(post.title)} on Makezaa.`),
     image: post.cover_image || previewImage('blog', post.slug), datePublished: post.created_at, dateModified: post.updated_at,
-    author: { '@type': 'Organization', name: 'Makezaa', '@id': organization['@id'], url: absoluteUrl('/blog') },
+    author: { '@type': 'Organization', name: 'Makezaa', '@id': organization['@id'], url: organization.url },
     publisher: { '@id': organization['@id'] }, mainEntityOfPage: { '@type': 'WebPage', '@id': url },
     keywords: post.tags ?? [],
   }, breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Blog', path: '/blog' }, { name: post.title, path: contentPath('blog', post.slug) }])] };

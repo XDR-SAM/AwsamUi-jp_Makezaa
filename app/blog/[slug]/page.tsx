@@ -51,7 +51,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                 year: 'numeric', month: 'long', day: 'numeric',
               })}</time>
             </div>
-            <p className="text-sm text-muted-foreground mb-4">By <Link href="/blog" className="hover:text-foreground">Makezaa</Link>
+            <p className="text-sm text-muted-foreground mb-4">By <Link href="/" className="hover:text-foreground">Makezaa</Link>
               {' · Updated '}<time dateTime={post.updated_at}>{new Date(post.updated_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
             </p>
             <h1 className="font-display text-3xl md:text-5xl text-foreground tracking-tight leading-tight">
