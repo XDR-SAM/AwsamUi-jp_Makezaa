@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { assertAdmin } from '@/utils/supabase/require-admin';
 import { createAdminClient } from '@/utils/supabase/admin';
 import { validateAuthorization } from '@/lib/agents/oauth';
+import { AgentConsentForm } from '@/components/admin/agent-consent-form';
 export const dynamic = 'force-dynamic';
 export default async function AuthorizePage({
   searchParams,
@@ -63,28 +64,7 @@ export default async function AuthorizePage({
         <p className="text-sm text-zinc-400">
           You can revoke this connection at any time from Agent control.
         </p>
-        <form
-          action="/api/oauth/authorize"
-          method="POST"
-          className="flex gap-3"
-        >
-          <input type="hidden" name="request" value={id} />
-          <input type="hidden" name="scope" value={scopes.join(',')} />
-          <button
-            name="decision"
-            value="allow"
-            className="rounded-xl bg-white px-5 py-3 font-medium text-zinc-900"
-          >
-            Connect agent
-          </button>
-          <button
-            name="decision"
-            value="deny"
-            className="rounded-xl border border-zinc-700 px-5 py-3"
-          >
-            Deny
-          </button>
-        </form>
+        <AgentConsentForm requestId={id} scopes={scopes} callbackUri={params.redirect_uri} />
       </div>
     </main>
   );

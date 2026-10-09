@@ -102,13 +102,14 @@ export async function POST(request: NextRequest) {
         'Authorization expired. Reconnect from your agent.',
         403,
       );
-    const response = NextResponse.redirect(
-      callback(
-        params,
-        form.decision === 'allow' ? { code } : { error: 'access_denied' },
-      ),
-      303,
+    const destination = callback(
+      params,
+      form.decision === 'allow' ? { code } : { error: 'access_denied' },
     );
+    // The same consent checks apply to fetch and progressive native form submission.
+    const response = request.headers.get('accept')?.includes('application/json')
+      ? NextResponse.json({ redirect_to: destination })
+      : NextResponse.redirect(destination, 303);
     response.cookies.set(`makezaa_consent_${form.request}`, '', {
       path: '/api/oauth/authorize',
       maxAge: 0,

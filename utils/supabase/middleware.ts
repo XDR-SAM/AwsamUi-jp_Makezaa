@@ -41,7 +41,14 @@ export async function updateSession(request: NextRequest) {
 
   if (request.nextUrl.pathname.startsWith('/admin') || request.nextUrl.pathname.startsWith('/api/admin')) {
     supabaseResponse.headers.set('Cache-Control', 'private, no-store');
-    supabaseResponse.headers.set('Referrer-Policy', 'no-referrer');
+    // Native same-origin consent forms need their real Origin for CSRF checks.
+    // Neither policy sends a referrer to external OAuth callback destinations.
+    supabaseResponse.headers.set(
+      'Referrer-Policy',
+      request.nextUrl.pathname === '/admin/agents/authorize'
+        ? 'same-origin'
+        : 'no-referrer',
+    );
   }
 
   return supabaseResponse;

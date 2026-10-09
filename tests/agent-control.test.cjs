@@ -45,6 +45,23 @@ const oauth = load('lib/agents/oauth.ts', {
   './security': security,
 });
 
+test('consent forms retain same-origin headers while other private routes suppress referrers', async () => {
+  const { updateSession } = load('utils/supabase/middleware.ts', {
+    '@supabase/ssr': { createServerClient: () => ({ auth: { getUser: async () => ({}) } }) },
+    'next/server': { NextResponse: { next: () => ({ headers: new Headers() }) } },
+  });
+  const request = (path) => ({ nextUrl: new URL('https://www.makezaa.com' + path), headers: new Headers(), cookies: {} });
+  const consent = await updateSession(request('/admin/agents/authorize'));
+  assert.equal(consent.headers.get('Referrer-Policy'), 'same-origin');
+  assert.equal(consent.headers.get('Cache-Control'), 'private, no-store');
+  for (const path of ['/admin/posts', '/api/admin/posts']) {
+    const response = await updateSession(request(path));
+    assert.equal(response.headers.get('Referrer-Policy'), 'no-referrer');
+    assert.equal(response.headers.get('Cache-Control'), 'private, no-store');
+  }
+  assert.throws(() => security.sameOrigin(new Request('https://www.makezaa.com/api/oauth/authorize', { method: 'POST', headers: { origin: 'null' } })), /Invalid request origin/);
+});
+
 test('OAuth callbacks preserve loopback URI, state and issuer identification', () => {
   const url = new URL(oauth.callback(
     { redirect_uri: 'http://127.0.0.1:62899/callback', state: 'client-state' },
@@ -80,6 +97,67 @@ test('OAuth consent returns 401 for a missing admin session and keeps origin che
   assert.equal(adminChecks, 1);
 });
 const key = 'mza_abcdefghijklmnopqrstuvwxyz0123456789';
+function consentFixture({ nonce = 'test-nonce', pending = true, rpcError = null } = {}) {
+  const calls = [];
+  const params = { client_id: 'test-client', redirect_uri: 'http://127.0.0.1:62899/callback', state: 'client-state' };
+  const query = {
+    select() { return this; }, eq() { return this; }, gt() { return this; },
+    async maybeSingle() { return { data: pending ? { params } : null, error: null }; },
+  };
+  function response(body, init) {
+    const result = new Response(body, init);
+    result.cookies = { set: (...args) => calls.push({ cookie: args }) };
+    return result;
+  }
+  const route = load('app/api/oauth/authorize/route.ts', {
+    'next/server': { NextResponse: {
+      json: (body) => response(JSON.stringify(body), { headers: { 'content-type': 'application/json' } }),
+      redirect: (url, status) => response(null, { status, headers: { location: url } }),
+    } },
+    'next/headers': { cookies: async () => ({ get: () => nonce ? { value: nonce } : undefined }) },
+    '@/utils/supabase/admin': { createAdminClient: () => ({ from: () => query, rpc: async (name, args) => { calls.push({ name, args }); return { error: rpcError }; } }) },
+    '@/utils/supabase/require-admin': { assertAdmin: async () => ({ user: { id: 'owner' } }) },
+    '@/lib/agents/security': security,
+    '@/lib/agents/oauth': { ...oauth, validateAuthorization: async () => ({ params, scopes: ['posts:read'] }) },
+  });
+  return { calls, post: (accept = 'application/json', decision = 'allow', scope = 'posts:read') => route.POST(new Request('https://www.makezaa.com/api/oauth/authorize', {
+    method: 'POST', headers: { origin: 'https://www.makezaa.com', accept, 'content-type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ request: '049fbd44-038c-423c-8134-693fb2f8b511', scope, decision }),
+  })) };
+}
+test('fetch consent and native forms issue the same validated callback and clear the nonce', async () => {
+  for (const accept of ['application/json', 'text/html']) {
+    const f = consentFixture();
+    const result = await f.post(accept);
+    const destination = new URL(accept === 'application/json' ? (await result.json()).redirect_to : result.headers.get('location'));
+    assert.equal(result.status, accept === 'application/json' ? 200 : 303);
+    assert.equal(destination.origin, 'http://127.0.0.1:62899');
+    assert.equal(destination.searchParams.get('state'), 'client-state');
+    assert.equal(destination.searchParams.get('iss'), security.siteOrigin());
+    assert.match(destination.searchParams.get('code'), /^code_/);
+    assert.equal(result.headers.get('cache-control'), 'no-store');
+    assert.equal(f.calls[0].args.p_allow, true);
+    assert.equal(f.calls[1].cookie[2].maxAge, 0);
+  }
+});
+test('fetch denial returns access_denied without issuing a code', async () => {
+  const f = consentFixture();
+  const destination = new URL((await (await f.post('application/json', 'deny')).json()).redirect_to);
+  assert.equal(destination.searchParams.get('error'), 'access_denied');
+  assert.equal(destination.searchParams.has('code'), false);
+  assert.equal(f.calls[0].args.p_allow, false);
+});
+test('fetch consent cannot skip the bound nonce, expiry, requested scopes or atomic consumption', async () => {
+  for (const options of [{ nonce: null }, { pending: false }, { rpcError: { message: 'already consumed' } }]) {
+    const f = consentFixture(options);
+    const result = await f.post();
+    assert.equal(result.status, 403);
+    assert.equal((await result.json()).redirect_to, undefined);
+  }
+  const f = consentFixture();
+  assert.equal((await f.post('application/json', 'allow', 'posts:publish')).status, 400);
+  assert.equal(f.calls.length, 0);
+});
 const admin = { id: 'admin', app_metadata: { role: 'admin' } };
 function authFixture(credential, owner = admin, dbError = null) {
   const calls = [];
