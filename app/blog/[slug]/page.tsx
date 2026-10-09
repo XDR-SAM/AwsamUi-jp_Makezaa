@@ -5,17 +5,16 @@ import { FooterSection } from '@/components/landing/footer-section';
 import { CmsContent } from '@/components/cms-content';
 import { getPostBySlug, getPublishedPosts } from '@/lib/blog';
 import { Calendar, ArrowLeft, ArrowRight } from 'lucide-react';
+import { JsonLd } from '@/components/json-ld';
+import { postMetadata, postSchema, PRIVATE_ROBOTS } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
-  if (!post) return { title: 'Post Not Found | Makezaa' };
-  return {
-    title: `${post.title} | Makezaa Blog`,
-    description: post.excerpt ?? undefined,
-  };
+  if (!post) return { title: 'Post Not Found', robots: PRIVATE_ROBOTS };
+  return postMetadata(post);
 }
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -28,6 +27,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
   return (
     <main className="relative min-h-screen overflow-x-hidden">
+      <JsonLd data={postSchema(post)} />
       <Navigation />
       <article className="pt-32 pb-20 px-6">
         <div className="max-w-3xl mx-auto">
@@ -47,10 +47,13 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           <header className="mb-10">
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
               <Calendar size={14} />
-              {new Date(post.created_at).toLocaleDateString('en-US', {
+              <time dateTime={post.created_at}>{new Date(post.created_at).toLocaleDateString('en-US', {
                 year: 'numeric', month: 'long', day: 'numeric',
-              })}
+              })}</time>
             </div>
+            <p className="text-sm text-muted-foreground mb-4">By <Link href="/blog" className="hover:text-foreground">Makezaa</Link>
+              {' · Updated '}<time dateTime={post.updated_at}>{new Date(post.updated_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
+            </p>
             <h1 className="font-display text-3xl md:text-5xl text-foreground tracking-tight leading-tight">
               {post.title}
             </h1>

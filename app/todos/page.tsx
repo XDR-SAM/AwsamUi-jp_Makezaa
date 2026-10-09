@@ -1,5 +1,8 @@
 import { createClient } from '@/utils/supabase/server'
 import { cookies } from 'next/headers'
+import { PRIVATE_ROBOTS } from '@/lib/seo'
+
+export const metadata = { title: 'Todos', robots: PRIVATE_ROBOTS, openGraph: null, twitter: null, alternates: null }
 
 export default async function Page() {
   const cookieStore = await cookies()

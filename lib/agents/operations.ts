@@ -205,6 +205,13 @@ export const operations: Record<string, Operation> = {
           'Use the calling agent’s web research and image tools; upload licensed or generated images.',
         scheduling:
           'A connected agent scheduler must claim queued jobs at run_at. Creating a job alone does not run an AI agent.',
+        publishing_guidelines: {
+          automatic_seo: 'Published posts and projects get canonical URLs, title/description, social preview cards, JSON-LD, and sitemap inclusion automatically. Drafts stay private.',
+          content: 'Write an accurate unique title, a useful excerpt/description, and original helpful content with clear headings. Cite primary sources for news, verify dates, distinguish facts from opinion, and link relevant Makezaa work where useful. Do not keyword-stuff or mass-publish low-value summaries.',
+          images: 'Use a relevant licensed or generated cover image with descriptive alt text in article HTML. Preserve image attribution and clearly label illustrative AI images when needed.',
+          evidence: 'Do not invent authors, ratings, project results, business details, or claim guaranteed Google rankings or AI citations.',
+          sitemap_url: `${siteOrigin()}/sitemap.xml`,
+        },
       };
       for (const table of ['posts', 'projects']) {
         const { count, error } = await db

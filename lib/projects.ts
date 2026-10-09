@@ -1,6 +1,7 @@
 import { createAdminClient } from "@/utils/supabase/admin";
 import { createPublicClient } from "@/utils/supabase/public";
 import type { Project, ProjectInput } from "./types";
+import { cache } from 'react';
 
 // --- PUBLIC (respects RLS) ---
 
@@ -42,17 +43,17 @@ export async function getRecentProjects(limit = 3): Promise<Project[]> {
   return [...featured, ...rest].slice(0, limit);
 }
 
-export async function getProjectBySlug(slug: string): Promise<Project | null> {
+export const getProjectBySlug = cache(async (slug: string): Promise<Project | null> => {
   const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("projects")
     .select("*")
     .eq("slug", slug)
     .eq("published", true)
-    .single();
-  if (error) return null;
-  return data as Project;
-}
+    .maybeSingle();
+  if (error) throw error;
+  return data as Project | null;
+});
 
 // --- ADMIN (bypasses RLS) ---
 

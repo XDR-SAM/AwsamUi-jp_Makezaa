@@ -3,13 +3,11 @@ import { Navigation } from '@/components/landing/navigation';
 import { FooterSection } from '@/components/landing/footer-section';
 import { getPublishedProjects, getFeaturedProjects } from '@/lib/projects';
 import { ExternalLink, Github, Star, ArrowLeft } from 'lucide-react';
+import { pageMetadata, previewImage } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = {
-  title: 'Projects | Makezaa',
-  description: 'Selected work — websites, apps, and digital products built by Makezaa.',
-};
+export const metadata = pageMetadata('Projects', 'Selected work — websites, apps, and digital products built by Makezaa.', '/projects', previewImage('site', 'projects'));
 
 export default async function ProjectsPage() {
   const [allProjects, featured] = await Promise.all([

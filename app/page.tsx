@@ -15,8 +15,14 @@ import { CtaSection } from "@/components/landing/cta-section";
 import { FooterSection } from "@/components/landing/footer-section";
 import { getRecentPosts } from "@/lib/blog";
 import { getRecentProjects } from "@/lib/projects";
+import { JsonLd } from '@/components/json-ld';
+import { pageMetadata, siteSchema, SITE_DESCRIPTION } from '@/lib/seo';
 
 export const dynamic = "force-dynamic";
+export const metadata = {
+  ...pageMetadata('Web Development & Digital Solutions', SITE_DESCRIPTION, '/'),
+  title: { absolute: 'Makezaa | Web Development & Digital Solutions' },
+};
 
 export default async function Home() {
   const [posts, projects] = await Promise.all([
@@ -26,6 +32,7 @@ export default async function Home() {
 
   return (
     <main className="relative min-h-screen overflow-x-hidden">
+      <JsonLd data={siteSchema()} />
       <Navigation />
       <HeroSection />
       <FeaturesSection />

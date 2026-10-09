@@ -4,11 +4,9 @@ import { FooterSection } from '@/components/landing/footer-section';
 import { LeadForm } from '@/components/landing/lead-form';
 import { siteEmail } from '@/lib/nav-links';
 import { Mail, MapPin, Clock } from 'lucide-react';
+import { pageMetadata, previewImage } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Contact | Makezaa',
-  description: 'Get in touch with Makezaa — book a free meeting or send us a message about your project.',
-};
+export const metadata = pageMetadata('Contact', 'Get in touch with Makezaa — book a free meeting or send us a message about your project.', '/contact', previewImage('site', 'contact'));
 
 export default function ContactPage() {
   return (
