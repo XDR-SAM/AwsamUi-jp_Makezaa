@@ -14,6 +14,7 @@ function load(file, mocks = {}) {
   return module.exports;
 }
 const seo = load('lib/seo.ts', { './nav-links': { siteEmail: 'hello@makezaa.com' } });
+const rendering = load('lib/cms-rendering.ts');
 const post = { title: 'A useful article', slug: 'useful-article', excerpt: null,
   content: '<p>A practical &amp; original article.</p>', cover_image: null,
   tags: ['Development'], created_at: '2026-06-07T10:00:00Z', updated_at: '2026-10-09T11:00:00Z' };
@@ -34,6 +35,7 @@ test('new posts automatically get canonical, useful description, article dates, 
 test('metadata stays plain text and JSON-LD cannot break out of the script element', () => {
   const value = '</script><script>alert("bad")</script><p>Useful text &amp; details</p>';
   assert.equal(seo.plainText(value), 'Useful text & details');
+  assert.equal(seo.plainText('<p>Alpha</p><p>Beta&nbsp;Gamma</p>'), 'Alpha Beta Gamma');
   const encoded = seo.serializeJsonLd({ title: value });
   assert.equal(encoded.includes('<'), false);
   assert.equal(JSON.parse(encoded).title, value);
@@ -53,6 +55,17 @@ test('article schema preserves truthful dates and images, project schema stays C
   assert.equal(organization.telephone, undefined);
   assert.equal(organization.openingHoursSpecification, undefined);
   assert.equal(organization.aggregateRating, undefined);
+});
+
+test('legacy Markdown renders readable sections, lists, and clickable sources without executing HTML', () => {
+  const html = rendering.renderCmsContent('# Article section\n\n## Why it matters\n- One useful fact\n\nhttps://example.com/source\n\n<script>alert(1)</script>');
+  assert.ok(html.includes('<h2>Article section</h2>'));
+  assert.ok(html.includes('<li>One useful fact</li>'));
+  assert.ok(html.includes('href="https://example.com/source"'));
+  assert.equal(html.includes('<script'), false);
+  assert.equal(html.includes('alert(1)'), false);
+  const rich = '<h1 class="existing">Section</h1><p><strong>Content</strong></p>';
+  assert.equal(rendering.renderCmsContent(rich), '<h2 class="existing">Section</h2><p><strong>Content</strong></p>');
 });
 
 test('sitemap reads only published rows beyond the default 1000-row limit', async () => {

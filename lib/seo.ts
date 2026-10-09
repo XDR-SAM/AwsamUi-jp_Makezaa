@@ -17,7 +17,8 @@ export function contentPath(kind: 'blog' | 'projects', slug: string): string {
 
 /** Plain text only; CMS markup must never become executable metadata. */
 export function plainText(value: string | null | undefined): string {
-  return sanitizeHtml(value ?? '', { allowedTags: [], allowedAttributes: {}, parser: { decodeEntities: true } })
+  const spaced = (value ?? '').replace(/<\/(?:p|div|li|h[1-6]|blockquote)>|<br\s*\/?>/gi, ' ');
+  return sanitizeHtml(spaced, { allowedTags: [], allowedAttributes: {}, parser: { decodeEntities: true } })
     .replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
     .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ')
     .replace(/\s+/g, ' ').trim();
