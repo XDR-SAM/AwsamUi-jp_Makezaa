@@ -38,6 +38,47 @@ const scopes = load('lib/agents/scope-list.ts');
 const security = load('lib/agents/security.ts', { './scope-list': scopes });
 const validation = load('lib/agents/validation.ts', { './security': security });
 const { isAdmin } = load('utils/supabase/authorization.ts');
+const oauth = load('lib/agents/oauth.ts', {
+  'server-only': {},
+  '@/utils/supabase/admin': { createAdminClient: () => { throw new Error('Unexpected database access'); } },
+  './validation': validation,
+  './security': security,
+});
+
+test('OAuth callbacks preserve loopback URI, state and issuer identification', () => {
+  const url = new URL(oauth.callback(
+    { redirect_uri: 'http://127.0.0.1:62899/callback', state: 'client-state' },
+    { code: 'test-code' },
+  ));
+  assert.equal(url.origin, 'http://127.0.0.1:62899');
+  assert.equal(url.pathname, '/callback');
+  assert.equal(url.searchParams.get('state'), 'client-state');
+  assert.equal(url.searchParams.get('iss'), security.siteOrigin());
+  assert.equal(url.searchParams.get('code'), 'test-code');
+});
+
+test('OAuth consent returns 401 for a missing admin session and keeps origin checks', async () => {
+  let adminChecks = 0;
+  const route = load('app/api/oauth/authorize/route.ts', {
+    'next/server': {},
+    'next/headers': { cookies: async () => { throw new Error('Unexpected cookie access'); } },
+    '@/utils/supabase/admin': { createAdminClient: () => { throw new Error('Unexpected grant'); } },
+    '@/utils/supabase/require-admin': { assertAdmin: async () => { adminChecks++; throw new Error('Unauthorized'); } },
+    '@/lib/agents/security': security,
+    '@/lib/agents/oauth': oauth,
+  });
+  const request = (origin) => new Request('https://www.makezaa.com/api/oauth/authorize', {
+    method: 'POST', headers: { origin, 'content-type': 'application/x-www-form-urlencoded' },
+    body: 'request=invalid&decision=deny',
+  });
+  const forbidden = await route.POST(request('https://example.com'));
+  assert.equal(forbidden.status, 403);
+  assert.equal(adminChecks, 0);
+  const unauthenticated = await route.POST(request('https://www.makezaa.com'));
+  assert.equal(unauthenticated.status, 401);
+  assert.match((await unauthenticated.json()).error, /Admin sign-in required/);
+  assert.equal(adminChecks, 1);
+});
 const key = 'mza_abcdefghijklmnopqrstuvwxyz0123456789';
 const admin = { id: 'admin', app_metadata: { role: 'admin' } };
 function authFixture(credential, owner = admin, dbError = null) {

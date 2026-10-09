@@ -49,7 +49,15 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     sameOrigin(request);
-    const { user } = await assertAdmin();
+    let user;
+    try {
+      ({ user } = await assertAdmin());
+    } catch {
+      throw new AgentError(
+        'Admin sign-in required. Sign in to Makezaa and reconnect from your agent.',
+        401,
+      );
+    }
     const form = await smallForm(request);
     if (!/^[0-9a-f-]{36}$/.test(form.request ?? ''))
       throw new AgentError('Invalid authorization request');
