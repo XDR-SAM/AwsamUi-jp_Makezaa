@@ -268,7 +268,7 @@ export function MetricsSection() {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
           }`}>
             <div className="text-4xl md:text-5xl lg:text-6xl font-display tracking-tight mb-4 whitespace-nowrap overflow-hidden">
-              <AnimatedNumber end={metrics[0].value} suffix={metrics[0].suffix} prefix={metrics[0].prefix} />
+              <AnimatedNumber end={metrics[0].value} suffix={metrics[0].suffix} />
             </div>
             <div className="mb-6">
               <DotGraph color="white" height={36} freq1={0.28} freq2={0.09} freqT={0.5} speed={0.018} baseline={0.35} amplitude={0.55} />
@@ -301,7 +301,7 @@ export function MetricsSection() {
                 />
               </div>
               <div className="text-3xl md:text-4xl lg:text-5xl font-display tracking-tight w-full">
-                <AnimatedNumber end={metric.value} suffix={metric.suffix} prefix={metric.prefix} />
+                <AnimatedNumber end={metric.value} suffix={metric.suffix} />
               </div>
             </div>
           ))}

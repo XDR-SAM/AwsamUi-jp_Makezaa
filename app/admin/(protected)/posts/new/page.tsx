@@ -1,6 +1,8 @@
+import { requireAdminPage } from '@/utils/supabase/require-admin';
 import { PostEditor } from '@/components/admin/post-editor';
 
-export default function NewPostPage() {
+export default async function NewPostPage() {
+  await requireAdminPage();
   return (
     <div className="p-8">
       <div className="mb-6">

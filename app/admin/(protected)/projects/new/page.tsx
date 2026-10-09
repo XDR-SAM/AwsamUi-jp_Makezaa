@@ -1,6 +1,8 @@
+import { requireAdminPage } from '@/utils/supabase/require-admin';
 import { ProjectEditor } from '@/components/admin/project-editor';
 
-export default function NewProjectPage() {
+export default async function NewProjectPage() {
+  await requireAdminPage();
   return (
     <div className="p-8">
       <div className="mb-6">

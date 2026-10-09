@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { Loader2, LogIn } from 'lucide-react';
+import Link from 'next/link';
+import { isAdmin } from '@/utils/supabase/authorization';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -16,14 +18,20 @@ export default function AdminLoginPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      setError(error.message);
-      setLoading(false);
-    } else {
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      if (error) throw error;
+      if (!isAdmin(data.user)) {
+        await supabase.auth.signOut();
+        throw new Error('This account does not have admin access.');
+      }
       router.push('/admin');
       router.refresh();
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Unable to sign in. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -41,14 +49,15 @@ export default function AdminLoginPage() {
 
         <form onSubmit={handleLogin} className="space-y-4">
           {error && (
-            <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm text-center">
+            <div role="alert" className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm text-center">
               {error}
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-medium text-zinc-400 mb-1.5">Email</label>
+            <label htmlFor="email" className="block text-xs font-medium text-zinc-400 mb-1.5">Email</label>
             <input
+              id="email"
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
@@ -60,8 +69,9 @@ export default function AdminLoginPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-zinc-400 mb-1.5">Password</label>
+            <label htmlFor="password" className="block text-xs font-medium text-zinc-400 mb-1.5">Password</label>
             <input
+              id="password"
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
@@ -81,6 +91,10 @@ export default function AdminLoginPage() {
             {loading ? 'Signing in…' : 'Sign In'}
           </button>
         </form>
+
+        <p className="text-center text-sm text-zinc-400 mt-4">
+          <Link href="/admin/forgot-password" className="hover:text-white">Forgot password?</Link>
+        </p>
 
         <p className="text-center text-xs text-zinc-600 mt-6">
           <a href="/" className="hover:text-zinc-400 transition-colors">← Back to site</a>

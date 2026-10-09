@@ -1,8 +1,10 @@
+import { requireAdminPage } from '@/utils/supabase/require-admin';
 import { notFound } from 'next/navigation';
 import { getProjectById } from '@/lib/projects';
 import { ProjectEditor } from '@/components/admin/project-editor';
 
 export default async function EditProjectPage({ params }: { params: Promise<{ id: string }> }) {
+  await requireAdminPage();
   const { id } = await params;
   const project = await getProjectById(id);
   if (!project) notFound();

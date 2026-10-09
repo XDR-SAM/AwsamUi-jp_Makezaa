@@ -1,3 +1,4 @@
+import { requireAdminPage } from '@/utils/supabase/require-admin';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getSubmissionById, formatPreferredTime } from '@/lib/submissions';
@@ -9,6 +10,7 @@ export default async function AdminInboxDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requireAdminPage();
   const { id } = await params;
   const submission = await getSubmissionById(id);
   if (!submission) notFound();

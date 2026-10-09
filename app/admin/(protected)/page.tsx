@@ -1,3 +1,4 @@
+import { requireAdminPage } from '@/utils/supabase/require-admin';
 import { getAllPosts } from '@/lib/blog';
 import { getAllProjects } from '@/lib/projects';
 import { getAllSubmissions } from '@/lib/submissions';
@@ -5,6 +6,7 @@ import { FileText, FolderOpen, Eye, Inbox, Calendar, Mail } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function AdminDashboard() {
+  await requireAdminPage();
   const [posts, projects, submissions] = await Promise.all([
     getAllPosts(),
     getAllProjects(),

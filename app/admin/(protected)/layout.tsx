@@ -2,13 +2,14 @@ import { createClient } from '@/utils/supabase/server';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { AdminSidebar } from '@/components/admin/admin-sidebar';
+import { isAdmin } from '@/utils/supabase/authorization';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) redirect('/admin/login');
+  if (!isAdmin(user)) redirect('/admin/login');
 
   return (
     <div className="flex min-h-screen bg-[oklch(0.06_0.008_260)]">

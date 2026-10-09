@@ -1,14 +1,7 @@
 import { createAdminClient } from "@/utils/supabase/admin";
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
 
-async function assertAdmin() {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Unauthorized");
-}
+import { assertAdmin } from "@/utils/supabase/require-admin";
 
 export async function POST(request: NextRequest) {
   try {

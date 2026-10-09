@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test:auth": "node --test tests/admin-auth.test.cjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

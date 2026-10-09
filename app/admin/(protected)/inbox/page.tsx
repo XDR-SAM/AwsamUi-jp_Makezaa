@@ -1,3 +1,4 @@
+import { requireAdminPage } from '@/utils/supabase/require-admin';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { getAllSubmissions, formatPreferredTime } from '@/lib/submissions';
@@ -11,6 +12,7 @@ export default async function AdminInboxPage({
 }: {
   searchParams: Promise<{ type?: string }>;
 }) {
+  await requireAdminPage();
   const { type } = await searchParams;
   const filter = type === 'meeting' || type === 'contact' ? type : null;
 

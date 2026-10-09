@@ -19,7 +19,7 @@ export async function updateSession(request: NextRequest) {
         getAll() {
           return request.cookies.getAll();
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet, headers) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
           supabaseResponse = NextResponse.next({
             request: {
@@ -29,12 +29,20 @@ export async function updateSession(request: NextRequest) {
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           );
+          Object.entries(headers).forEach(([name, value]) =>
+            supabaseResponse.headers.set(name, value)
+          );
         },
       },
     },
   );
 
   await supabase.auth.getUser();
+
+  if (request.nextUrl.pathname.startsWith('/admin') || request.nextUrl.pathname.startsWith('/api/admin')) {
+    supabaseResponse.headers.set('Cache-Control', 'private, no-store');
+    supabaseResponse.headers.set('Referrer-Policy', 'no-referrer');
+  }
 
   return supabaseResponse;
 }
