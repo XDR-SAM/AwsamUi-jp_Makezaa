@@ -10,6 +10,10 @@ This repository is linked to a [v0](https://v0.app) project. You can continue de
 
 ## Getting Started
 
+Admin password recovery setup is documented in [docs/admin-recovery.md](docs/admin-recovery.md).
+Agent posting endpoints and examples are in [docs/agent-api.md](docs/agent-api.md).
+Run `npm run test:auth` to verify admin authorization and recovery behavior.
+
 First, run the development server:
 
 ```bash

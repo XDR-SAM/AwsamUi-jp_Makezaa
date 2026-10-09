@@ -1,3 +1,4 @@
+import { requireAdminPage } from '@/utils/supabase/require-admin';
 import Link from 'next/link';
 import { getAllPosts } from '@/lib/blog';
 import { DeleteItemButton } from '@/components/admin/delete-item-button';
@@ -5,6 +6,7 @@ import { PublishButton } from '@/components/admin/publish-button';
 import { Plus, FileText, Pencil, ExternalLink } from 'lucide-react';
 
 export default async function AdminPostsPage() {
+  await requireAdminPage();
   const posts = await getAllPosts();
 
   return (

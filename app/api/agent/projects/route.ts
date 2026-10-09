@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const AGENT_TOKEN = process.env.MAKEZAA_AGENT_TOKEN ?? '';
 
+function unauthorized(message: string, hint?: string, status = 401) {
+  return NextResponse.json({ error: message, ...(hint ? { hint } : {}) }, { status });
+}
+
 function assertAgentToken(request: NextRequest) {
   const header = request.headers.get('x-makezaa-agent-token') ?? '';
   if (!AGENT_TOKEN) return { ok: false as const, reason: 'not configured', hint: 'Set MAKEZAA_AGENT_TOKEN in the server environment' };

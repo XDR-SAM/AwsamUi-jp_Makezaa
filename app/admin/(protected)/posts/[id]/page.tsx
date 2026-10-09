@@ -1,8 +1,10 @@
+import { requireAdminPage } from '@/utils/supabase/require-admin';
 import { notFound } from 'next/navigation';
 import { getPostById } from '@/lib/blog';
 import { PostEditor } from '@/components/admin/post-editor';
 
 export default async function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
+  await requireAdminPage();
   const { id } = await params;
   const post = await getPostById(id);
   if (!post) notFound();
