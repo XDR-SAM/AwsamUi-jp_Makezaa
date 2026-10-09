@@ -16,3 +16,5 @@ node_modules
 .next/
 *.tsbuildinfo
 .DS_Store
+supabase/.temp/
+artifacts/

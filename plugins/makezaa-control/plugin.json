@@ -1,0 +1,26 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "makezaa-control",
+  "version": "1.0.0",
+  "description": "Control Makezaa’s posts, portfolio, media, customer inbox, agent tasks and completion reports through its authenticated MCP server.",
+  "author": { "name": "Makezaa", "url": "https://www.makezaa.com" },
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Makezaa Control",
+        "shortDescription": "Manage your Makezaa website",
+        "longDescription": "Connect your Makezaa admin account to manage blog posts, projects, images and customer submissions. Give an agent a publishing task, track its progress, and receive a permanent Dashboard report plus a result in the current chat. News research and image creation use your agent’s own tools; scheduled runs use your agent’s scheduler.",
+        "developerName": "Makezaa",
+        "category": "Productivity",
+        "capabilities": ["Interactive"],
+        "logo": "./assets/icon.svg",
+        "composerIcon": "./assets/icon.svg",
+        "defaultPrompt": [
+          "Research today’s technology news, publish five original Makezaa posts with suitable images and source links, then report the results here and in the Dashboard.",
+          "Process the available Makezaa task queue and report each completed task.",
+          "Show Makezaa’s recent posts, projects and agent task reports."
+        ]
+      }
+    }
+  }
+}

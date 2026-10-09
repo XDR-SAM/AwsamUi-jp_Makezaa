@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import {
-  LayoutDashboard, FileText, FolderOpen, LogOut, PenSquare, Plus, Inbox,
+  LayoutDashboard, FileText, FolderOpen, LogOut, PenSquare, Plus, Inbox, Bot,
 } from 'lucide-react';
 
 const nav = [
@@ -13,6 +13,7 @@ const nav = [
   { href: '/admin/inbox', label: 'Inbox', icon: Inbox },
   { href: '/admin/posts', label: 'Posts', icon: FileText },
   { href: '/admin/projects', label: 'Projects', icon: FolderOpen },
+  { href: '/admin/agents', label: 'Agent control', icon: Bot },
 ];
 
 export function AdminSidebar() {
