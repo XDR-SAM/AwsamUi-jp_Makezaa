@@ -143,7 +143,7 @@ test('OAuth consent returns 401 for a missing admin session and keeps origin che
   assert.equal(adminChecks, 1);
 });
 const key = 'mza_abcdefghijklmnopqrstuvwxyz0123456789';
-function consentFixture({ nonce = 'test-nonce', pending = true, rpcError = null, lookupError = null } = {}) {
+function consentFixture({ nonce = 'test-nonce', pending = true, rpcError = null, lookupError = null, requested = ['posts:read'] } = {}) {
   const calls = [];
   const params = { client_id: 'test-client', redirect_uri: 'http://127.0.0.1:62899/callback', state: 'client-state' };
   const query = {
@@ -164,11 +164,14 @@ function consentFixture({ nonce = 'test-nonce', pending = true, rpcError = null,
     '@/utils/supabase/admin': { createAdminClient: () => ({ from: () => query, rpc: async (name, args) => { calls.push({ name, args }); return { error: rpcError }; } }) },
     '@/utils/supabase/require-admin': { assertAdmin: async () => ({ user: { id: 'owner' } }) },
     '@/lib/agents/security': security,
-    '@/lib/agents/oauth': { ...oauth, validateAuthorization: async () => ({ params, scopes: ['posts:read'] }) },
+    '@/lib/agents/oauth': { ...oauth, validateAuthorization: async () => ({ params, scopes: requested }) },
   });
   return { calls, post: (accept = 'application/json', decision = 'allow', scope = 'posts:read') => route.POST(new Request('https://www.makezaa.com/api/oauth/authorize', {
     method: 'POST', headers: { origin: 'https://www.makezaa.com', accept, 'content-type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ request: '049fbd44-038c-423c-8134-693fb2f8b511', scope, decision }),
+    body: new URLSearchParams([
+      ['request', '049fbd44-038c-423c-8134-693fb2f8b511'], ['decision', decision],
+      ...(Array.isArray(scope) ? scope : [scope]).map(s => ['scope', s]),
+    ]),
   })) };
 }
 test('fetch consent and native forms issue the same validated callback and clear the nonce', async () => {
@@ -192,6 +195,27 @@ test('fetch denial returns access_denied without issuing a code', async () => {
   assert.equal(destination.searchParams.get('error'), 'access_denied');
   assert.equal(destination.searchParams.has('code'), false);
   assert.equal(f.calls[0].args.p_allow, false);
+});
+test('native consent preserves every selected checkbox and grants only the requested subset', async () => {
+  const selected = ['projects:read', 'projects:write', 'projects:publish'];
+  const f = consentFixture({ requested: [...scopes.SCOPES] });
+  assert.equal((await f.post('text/html', 'allow', selected)).status, 303);
+  assert.equal(f.calls[0].args.p_scopes.join(' '), selected.join(' '));
+  const denied = consentFixture({ requested: [...scopes.SCOPES] });
+  const result = await denied.post('text/html', 'deny', []);
+  assert.equal(result.status, 303);
+  assert.equal(denied.calls[0].args.p_allow, false);
+  const empty = consentFixture();
+  assert.equal((await empty.post('application/json', 'allow', [])).status, 400);
+  assert.equal(empty.calls.length, 0);
+});
+test('consent defaults allow publishing while leaving deletion and private inbox unchecked', () => {
+  const defaults = scopes.defaultConsentScopes([...scopes.SCOPES]);
+  assert.equal(defaults.length, 12);
+  for (const permission of ['posts:read', 'projects:read', 'projects:write', 'projects:publish']) assert(defaults.includes(permission));
+  for (const permission of scopes.SCOPES.filter(s => s.endsWith(':delete') || s.startsWith('inbox:'))) assert.equal(defaults.includes(permission), false);
+  assert.equal(scopes.defaultConsentScopes(['posts:read']).join(' '), 'posts:read');
+  assert.equal(scopes.defaultConsentScopes(['inbox:read']).length, 0);
 });
 test('fetch consent cannot skip the bound nonce, expiry, requested scopes or atomic consumption', async () => {
   for (const options of [{ nonce: null }, { pending: false }, { rpcError: { message: 'already consumed' } }]) {
@@ -498,6 +522,8 @@ test('real SDK client initializes stateless HTTP, lists schemas, and calls a too
     assert.equal(tool._meta.securitySchemes[0].type, 'oauth2');
   }
   assert.deepEqual(tools.find(t => t.name === 'project_save')._meta.securitySchemes[0].scopes, ['projects:write']);
+  assert.deepEqual(tools.find(t => t.name === 'content_list')._meta.securitySchemes[0].scopes, ['posts:read', 'projects:read']);
+  assert.deepEqual([...new Set(wireTools.flatMap(t => t.securitySchemes[0].scopes))].sort(), [...scopes.SCOPES].sort());
   assert.equal(tools.find(t => t.name === 'github_repository').annotations.openWorldHint, true);
   assert(tools.some((t) => t.name === 'job_finish'));
   assert.equal(

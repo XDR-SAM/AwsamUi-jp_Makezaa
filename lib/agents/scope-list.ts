@@ -33,3 +33,5 @@ export const EDITOR_SCOPES: Scope[] = [
   'jobs:write',
   'audit:read',
 ];
+export const defaultConsentScopes = (requested: string[]) =>
+  requested.filter((scope) => EDITOR_SCOPES.includes(scope as Scope));
