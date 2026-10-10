@@ -74,6 +74,51 @@ test('OAuth callbacks preserve loopback URI, state and issuer identification', (
   assert.equal(url.searchParams.get('code'), 'test-code');
 });
 
+test('ChatGPT authorization ignores optional parameters while validating security fields', async () => {
+  const params = {
+    client_id: 'chatgpt-client',
+    redirect_uri: 'https://chatgpt.com/connector_platform_oauth_redirect',
+    response_type: 'code',
+    code_challenge: security.pkce('dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk'),
+    code_challenge_method: 'S256',
+    resource: security.resourceUrl(),
+    state: 'chatgpt-state',
+    scope: 'site:read posts:read',
+    ui_locales: 'en-US',
+    extra_client_hint: 'ignored',
+    owner_id: 'cannot-inject-owner',
+  };
+  let lookedUpClient;
+  const fixture = load('lib/agents/oauth.ts', {
+    'server-only': {},
+    '@/utils/supabase/admin': { createAdminClient: () => ({
+      from: () => ({ select: () => ({ eq: (_, client) => {
+        lookedUpClient = client;
+        return { maybeSingle: async () => ({
+          data: { redirect_uris: [params.redirect_uri] }, error: null,
+        }) };
+      } }) }),
+    }) },
+    './validation': validation,
+    './security': security,
+  });
+  const result = await fixture.validateAuthorization(params);
+  assert.equal(lookedUpClient, params.client_id);
+  assert.equal(result.params.redirect_uri, params.redirect_uri);
+  assert.equal(result.params.state, params.state);
+  assert.equal(result.scopes.join(' '), params.scope);
+  for (const field of ['ui_locales', 'extra_client_hint', 'owner_id'])
+    assert.equal(Object.hasOwn(result.params, field), false);
+  await assert.rejects(fixture.validateAuthorization({ ...params, redirect_uri: 'https://attacker.example/callback' }), /Invalid client or redirect URI/);
+  await assert.rejects(fixture.validateAuthorization({ ...params, scope: 'unknown:scope' }));
+  for (const invalid of [
+    { code_challenge_method: 'plain' },
+    { code_challenge: 'invalid' },
+    { resource: 'https://attacker.example/mcp' },
+    { response_type: 'token' },
+  ]) assert.equal(oauth.authorizeSchema.safeParse({ ...params, ...invalid }).success, false);
+});
+
 test('OAuth consent returns 401 for a missing admin session and keeps origin checks', async () => {
   let adminChecks = 0;
   const route = load('app/api/oauth/authorize/route.ts', {
