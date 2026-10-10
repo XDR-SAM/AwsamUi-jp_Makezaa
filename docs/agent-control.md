@@ -38,6 +38,7 @@ Copy/install the workflow skill using your host’s skill mechanism and enable i
 | Area | Tools |
 | --- | --- |
 | Website | `site_info` |
+| Public GitHub research | `github_repositories`, `github_repository` |
 | Posts & projects | `content_list`, `content_get`, `post_save`, `post_publish`, `post_delete`, `project_save`, `project_publish`, `project_delete` |
 | Private customer inbox | `inbox_list`, `inbox_delete` |
 | Images | `media_list`, `media_upload`, `media_import`, `media_delete` |
@@ -45,6 +46,14 @@ Copy/install the workflow skill using your host’s skill mechanism and enable i
 | Action history | `audit_read` |
 
 These cover the current CMS. Static page layout/source, deployments, DNS, billing and Auth user administration require separate repository/platform tools. The plugin does not expose arbitrary SQL, shell execution or Supabase service-role credentials.
+
+### GitHub and portfolio publishing
+
+Public repository research is built in: `github_repositories` defaults to `XDR-SAM`, sorts by latest push and excludes forks/archived repositories. Select `sort: "created"` for newly created repositories. Paginate explicitly; filtering applies within each page. `github_repository` returns metadata, a bounded README and language statistics from the public GitHub API. It forwards no credentials, executes no code and cannot access private repositories. Private research requires a separate authorized GitHub connection and explicit authorization for any public disclosure.
+
+Blog OAuth permissions do not grant portfolio access. Published portfolio work needs `projects:read`, `projects:write` and `projects:publish`. Add these through supported OAuth consent while preserving existing permissions. Delete and inbox scopes are unnecessary for this workflow. MCP descriptors publish both `securitySchemes` and its `_meta` mirror. Missing permissions return an `insufficient_scope` challenge in `_meta["mcp/www_authenticate"]` with the existing scopes plus the specifically required scope; permissions are still enforced on the server. The current SDK drops top-level descriptor extensions, so the list handler emits those fields explicitly while SDK validation handles calls.
+
+Write an English blog through `post_save`/`post_publish` or a portfolio entry through `project_save`/`project_publish`. Verify features/stack from sources, preserve repository and verified live URLs, check existing entries for duplicates, and verify the public page after publishing. Portfolio jobs do not set `expected_posts`; reports still track their outputs. No existing content or authorization grants are changed by installing this update.
 
 Example task: “আজকের পাঁচটি গুরুত্বপূর্ণ টেক নিউজ নিয়ে সোর্সসহ original পোস্ট তৈরি করে ছবি দিয়ে publish করো। Dashboard ও এই চ্যাটে রিপোর্ট দাও।” The host agent researches current primary sources, produces original articles, obtains permitted/generated images, uploads them, saves drafts, publishes, verifies each public page and stores the structured completion report. Research and image generation are supplied by the calling agent. Images are limited to 2 MiB per upload; resize/compress larger generated files before upload.
 

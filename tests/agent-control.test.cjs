@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 const ts = require('typescript');
-function load(file, mocks = {}) {
+function load(file, mocks = {}, globals = {}) {
   const source = ts.transpileModule(fs.readFileSync(file, 'utf8'), {
     compilerOptions: {
       module: ts.ModuleKind.CommonJS,
@@ -29,6 +29,7 @@ function load(file, mocks = {}) {
       setTimeout,
       clearTimeout,
       Intl,
+      ...globals,
     },
     { filename: file },
   );
@@ -383,6 +384,7 @@ function operationFixture(published = false) {
     zod: require('zod'),
     '@/utils/supabase/admin': { createAdminClient: () => db },
     './auth': auth,
+    './github': {},
     './security': security,
     './validation': validation,
     'next/cache': { revalidatePath: () => {} },
@@ -452,20 +454,31 @@ test('real SDK client initializes stateless HTTP, lists schemas, and calls a too
     './auth': {},
     './operations': {
       operations: f.operations,
-      runOperation: async (name) => ({ operation: name, ok: true }),
+      runOperation: async (name, principal, input) => {
+        if (name.startsWith('project_') || name === 'content_list')
+          return f.runOperation(name, principal, input);
+        if (name === 'audit_read') throw new security.AgentError('Database unavailable', 500);
+        return { operation: name, ok: true };
+      },
     },
     './security': security,
   });
+  let wireTools;
   const fetch = async (url, init) => {
     const request = new Request(url, init);
     if (request.method === 'GET') return new Response(null, { status: 405 });
-    const server = mcp.createMakezaaServer({ id: 'test', scopes: [] }),
+    const server = mcp.createMakezaaServer({ id: 'test', scopes: ['site:read', 'posts:read', 'posts:write', 'posts:publish'] }),
       transport = new WebStandardStreamableHTTPServerTransport({
         enableJsonResponse: true,
       });
     await server.connect(transport);
     try {
-      return await transport.handleRequest(request);
+      const response = await transport.handleRequest(request);
+      if (response.headers.get('content-type')?.includes('application/json')) {
+        const message = await response.clone().json();
+        if (message.result?.tools) wireTools = message.result.tools;
+      }
+      return response;
     } finally {
       await server.close();
     }
@@ -479,6 +492,13 @@ test('real SDK client initializes stateless HTTP, lists schemas, and calls a too
   );
   const { tools } = await client.listTools();
   assert.equal(tools.length, Object.keys(f.operations).length);
+  assert.deepEqual(Object.keys(mcp.toolScopes).sort(), Object.keys(f.operations).sort());
+  for (const tool of tools) {
+    assert.deepEqual(wireTools.find(t => t.name === tool.name).securitySchemes, tool._meta.securitySchemes);
+    assert.equal(tool._meta.securitySchemes[0].type, 'oauth2');
+  }
+  assert.deepEqual(tools.find(t => t.name === 'project_save')._meta.securitySchemes[0].scopes, ['projects:write']);
+  assert.equal(tools.find(t => t.name === 'github_repository').annotations.openWorldHint, true);
   assert(tools.some((t) => t.name === 'job_finish'));
   assert.equal(
     tools.find((t) => t.name === 'post_delete').annotations.destructiveHint,
@@ -487,5 +507,89 @@ test('real SDK client initializes stateless HTTP, lists schemas, and calls a too
   const result = await client.callTool({ name: 'site_info', arguments: {} });
   assert.equal(result.isError, undefined);
   assert.match(result.content[0].text, /"ok":true/);
+  for (const [name, args, scope] of [
+    ['content_list', { kind: 'projects' }, 'projects:read'],
+    ['project_save', { fields: { title: 'Example', slug: 'example' }, idempotency_key: 'project-test-1' }, 'projects:write'],
+    ['project_publish', { id: '049fbd44-038c-423c-8134-693fb2f8b511', published: true, idempotency_key: 'project-test-2' }, 'projects:publish'],
+  ]) {
+    const denied = await client.callTool({ name, arguments: args });
+    assert.equal(denied.isError, true);
+    const challenge = denied._meta['mcp/www_authenticate'][0];
+    assert.match(challenge, /error="insufficient_scope"/);
+    assert.match(challenge, /resource_metadata="https:\/\/www.makezaa.com\/\.well-known\/oauth-protected-resource"/);
+    assert(challenge.includes(scope));
+    assert(challenge.includes('posts:publish'));
+    assert.doesNotMatch(challenge, /:delete|inbox:/);
+  }
+  assert.equal(f.calls.length, 0);
+  const otherError = await client.callTool({ name: 'audit_read', arguments: {} });
+  assert.equal(otherError.isError, true);
+  assert.equal(otherError._meta, undefined);
   await client.close();
+});
+
+test('portfolio draft, publish and live edits enforce separate scopes and preserve URLs', async () => {
+  const id = '049fbd44-038c-423c-8134-693fb2f8b511';
+  const fields = { title: 'Repository project', slug: 'repository-project', github_url: 'https://github.com/XDR-SAM/example', tech_stack: ['TypeScript'], content: '<h2>How it works</h2><p>Documented features.</p>' };
+  const f = operationFixture();
+  const writer = { id: 'test', scopes: ['projects:write'] };
+  await f.runOperation('project_save', writer, { fields, idempotency_key: 'portfolio-draft-1' });
+  assert.equal(f.calls[0].params.p_data.github_url, fields.github_url);
+  assert.equal(f.calls[0].params.p_operation, 'project_save');
+  await assert.rejects(f.runOperation('project_publish', writer, { id, published: true, idempotency_key: 'portfolio-publish-1' }), e => e instanceof security.AgentScopeError);
+  await assert.rejects(operationFixture(true).runOperation('project_save', writer, { id, fields, idempotency_key: 'portfolio-edit-1' }), e => e.status === 403);
+  const publisher = { id: 'test', scopes: ['projects:write', 'projects:publish'] };
+  const result = await f.runOperation('project_publish', publisher, { id, published: true, idempotency_key: 'portfolio-publish-1' });
+  assert.equal(result.public_url, 'https://www.makezaa.com/projects/test');
+  await operationFixture(true).runOperation('project_save', publisher, { id, fields, idempotency_key: 'portfolio-edit-1' });
+});
+
+test('public GitHub research sorts latest activity, filters forks, and reads bounded README evidence', async () => {
+  const calls = [];
+  const repo = { name: 'new-project', full_name: 'XDR-SAM/new-project', html_url: 'https://github.com/XDR-SAM/new-project', pushed_at: '2026-10-10T12:00:00Z', private: false, fork: false, archived: false };
+  const github = load('lib/agents/github.ts', { 'server-only': {}, './security': security }, {
+    fetch: async (url, options) => {
+      calls.push({ url, options });
+      if (url.includes('/users/')) return Response.json([repo, { ...repo, name: 'fork', fork: true }]);
+      if (url.endsWith('/readme')) return Response.json({ encoding: 'base64', content: Buffer.from('x'.repeat(22000)).toString('base64'), path: 'README.md', html_url: repo.html_url + '/blob/main/README.md' });
+      if (url.endsWith('/languages')) return Response.json({ TypeScript: 123 });
+      return Response.json(repo);
+    },
+  });
+  const list = await github.listGithubRepositories({ owner: 'XDR-SAM', sort: 'pushed', page: 1, limit: 2, include_forks: false, include_archived: false });
+  assert.equal(list.items.length, 1);
+  assert.equal(list.next_page, 2);
+  assert.match(calls[0].url, /sort=pushed&direction=desc/);
+  const detail = await github.getGithubRepository({ owner: 'XDR-SAM', repo: 'new-project' });
+  assert.equal(detail.readme.text.length, 20000);
+  assert.equal(detail.readme.truncated, true);
+  assert.equal(detail.languages.TypeScript, 123);
+  assert.equal(calls.length, 4);
+  for (const call of calls) {
+    assert(call.url.startsWith('https://api.github.com/'));
+    assert.equal(call.options.headers.Authorization, undefined);
+    assert.equal(call.options.redirect, 'error');
+    assert(call.options.signal);
+  }
+});
+
+test('GitHub missing README is allowed; private/missing repos, rate limits and oversized responses are explicit errors', async () => {
+  const repo = { name: 'example', private: false };
+  const fixture = fetch => load('lib/agents/github.ts', { 'server-only': {}, './security': security }, { fetch });
+  const detail = await fixture(async url => url.endsWith('/readme') ? new Response(null, { status: 404 }) : Response.json(url.endsWith('/languages') ? {} : repo)).getGithubRepository({ owner: 'XDR-SAM', repo: 'example' });
+  assert.equal(detail.readme, null);
+  for (const [response, status] of [
+    [new Response(null, { status: 404 }), 404],
+    [new Response(null, { status: 403 }), 429],
+    [Response.json({ private: true }), 403],
+    [new Response('x'.repeat(2 * 1024 * 1024 + 1)), 413],
+  ]) await assert.rejects(fixture(async () => response).getGithubRepository({ owner: 'XDR-SAM', repo: 'example' }), e => e.status === status);
+});
+
+test('GitHub research rejects paths and needs site read permission before making requests', async () => {
+  const f = operationFixture();
+  await assert.rejects(f.runOperation('github_repository', { scopes: ['site:read'] }, { owner: 'XDR-SAM', repo: '../secrets' }), /Invalid/);
+  await assert.rejects(f.runOperation('github_repositories', { scopes: [] }, {}), e => e.status === 403);
+  await assert.rejects(f.runOperation('github_repository', { scopes: [] }, { repo: 'example' }), e => e.status === 403);
+  assert.equal(f.calls.length, 0);
 });

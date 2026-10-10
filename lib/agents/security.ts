@@ -48,6 +48,11 @@ export class AgentError extends Error {
     super(message);
   }
 }
+export class AgentScopeError extends AgentError {
+  constructor(public requiredScopes: Scope[]) {
+    super(`Required permission: ${requiredScopes.join(' ')}`, 403);
+  }
+}
 export function sameOrigin(request: Request) {
   if (request.headers.get('origin') !== new URL(request.url).origin)
     throw new AgentError('Invalid request origin', 403);
