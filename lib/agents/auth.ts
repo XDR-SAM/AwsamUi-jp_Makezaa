@@ -1,7 +1,7 @@
 import 'server-only';
 import { createAdminClient } from '@/utils/supabase/admin';
 import { isAdmin } from '@/utils/supabase/authorization';
-import { AgentError, hash, type Scope } from './security';
+import { AgentError, AgentScopeError, hash, type Scope } from './security';
 
 export type AgentPrincipal = {
   id: string;
@@ -76,5 +76,5 @@ export async function authenticateAgent(
 }
 export function need(principal: AgentPrincipal, ...scopes: Scope[]) {
   if (scopes.some((s) => !principal.scopes.includes(s)))
-    throw new AgentError(`Required permission: ${scopes.join(' ')}`, 403);
+    throw new AgentScopeError(scopes);
 }
