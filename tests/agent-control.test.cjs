@@ -455,7 +455,7 @@ test('real SDK client initializes stateless HTTP, lists schemas, and calls a too
     './operations': {
       operations: f.operations,
       runOperation: async (name, principal, input) => {
-        if (name.startsWith('project_') || name === 'content_list')
+        if (name.startsWith('project_') || name === 'content_list' || input.check_publishing)
           return f.runOperation(name, principal, input);
         if (name === 'audit_read') throw new security.AgentError('Database unavailable', 500);
         return { operation: name, ok: true };
@@ -508,6 +508,7 @@ test('real SDK client initializes stateless HTTP, lists schemas, and calls a too
   assert.equal(result.isError, undefined);
   assert.match(result.content[0].text, /"ok":true/);
   for (const [name, args, scope] of [
+    ['site_info', { check_publishing: 'projects' }, 'projects:read projects:write projects:publish'],
     ['content_list', { kind: 'projects' }, 'projects:read'],
     ['project_save', { fields: { title: 'Example', slug: 'example' }, idempotency_key: 'project-test-1' }, 'projects:write'],
     ['project_publish', { id: '049fbd44-038c-423c-8134-693fb2f8b511', published: true, idempotency_key: 'project-test-2' }, 'projects:publish'],

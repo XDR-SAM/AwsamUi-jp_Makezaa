@@ -206,11 +206,15 @@ export const operations: Record<string, Operation> = {
   },
   site_info: {
     description:
-      'Read Makezaa capabilities, current Asia/Dhaka date, granted permissions, public URLs, and content counts. The host agent supplies web research, image generation and scheduling.',
-    schema: z.object({}).strict(),
+      'Read Makezaa capabilities, current Asia/Dhaka date, granted permissions, public URLs, and content counts. Set check_publishing to posts or projects to preflight all required publishing permissions and offer OAuth reauthorization if missing. This check never creates content.',
+    schema: z.object({ check_publishing: z.enum(['posts', 'projects']).optional() }).strict(),
     annotations: annotations(true),
-    run: async (p) => {
+    run: async (p, a) => {
       need(p, 'site:read');
+      if (a.check_publishing === 'projects')
+        need(p, 'projects:read', 'projects:write', 'projects:publish');
+      if (a.check_publishing === 'posts')
+        need(p, 'posts:read', 'posts:write', 'posts:publish');
       const db = createAdminClient();
       const result: Record<string, unknown> = {
         name: 'Makezaa',
