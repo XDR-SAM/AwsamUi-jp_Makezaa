@@ -40,7 +40,9 @@ export const authorizeSchema = z
     state: z.string().max(2000).optional(),
     scope: z.string().max(1000).default(SCOPES.join(' ')),
   })
-  .strict();
+  // RFC 6749 section 3.1: ignore unrecognized authorization parameters.
+  // ChatGPT sends ui_locales; only validated fields are persisted or used.
+  .strip();
 export async function validateAuthorization(params: unknown) {
   const a = parse(authorizeSchema, params);
   const { data: client, error } = await createAdminClient()
