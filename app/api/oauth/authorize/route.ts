@@ -86,7 +86,9 @@ export async function POST(request: NextRequest) {
     const { params, scopes: requested } = await validateAuthorization(
       pending.params,
     );
-    const scopes = parseScopes((form.scope ?? '').split(','));
+    const scopes = form.decision === 'allow'
+      ? parseScopes((form.scope ?? '').split(','))
+      : requested;
     if (scopes.some((s) => !requested.includes(s) || !SCOPES.includes(s)))
       throw new AgentError('Invalid granted scope');
     const code = secret('code_');

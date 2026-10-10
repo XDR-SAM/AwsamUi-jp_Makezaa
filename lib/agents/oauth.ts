@@ -122,7 +122,12 @@ export async function smallForm(request: Request) {
       ?.startsWith('application/x-www-form-urlencoded')
   )
     throw new AgentError('Use application/x-www-form-urlencoded', 415);
-  return Object.fromEntries(new URLSearchParams(text));
+  const params = new URLSearchParams(text);
+  const fields = Object.fromEntries(params);
+  // Native checkbox forms repeat scope. Preserve every selected permission;
+  // token clients can continue sending one space-delimited scope value.
+  if (params.has('scope')) fields.scope = params.getAll('scope').join(',');
+  return fields;
 }
 export function oauthFailure(error: unknown) {
   return Response.json(

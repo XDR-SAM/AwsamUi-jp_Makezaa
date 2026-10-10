@@ -5,11 +5,12 @@ import type { AgentPrincipal } from './auth';
 import { operations, runOperation } from './operations';
 import { AgentScopeError, publicError, siteOrigin, type Scope } from './security';
 
-// Parameter-dependent content tools enforce the exact read scope at runtime.
+// Content descriptors advertise both supported destinations for host discovery;
+// handlers still enforce only the destination actually requested.
 // Save tools request publish scope at runtime only when they change live content.
 export const toolScopes: Record<string, Scope[]> = {
   site_info: ['site:read'], github_repositories: ['site:read'], github_repository: ['site:read'],
-  content_list: [], content_get: [],
+  content_list: ['posts:read', 'projects:read'], content_get: ['posts:read', 'projects:read'],
   post_save: ['posts:write'], project_save: ['projects:write'],
   post_publish: ['posts:publish'], project_publish: ['projects:publish'],
   post_delete: ['posts:delete'], project_delete: ['projects:delete'],

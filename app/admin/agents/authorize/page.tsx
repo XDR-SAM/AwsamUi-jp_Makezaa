@@ -46,21 +46,6 @@ export default async function AuthorizePage({
         <p className="break-all text-sm text-zinc-400">
           Callback: {params.redirect_uri}
         </p>
-        <ul className="grid grid-cols-2 gap-2 text-sm text-zinc-300">
-          {scopes.map((s) => (
-            <li key={s}>{s}</li>
-          ))}
-        </ul>
-        {scopes.some((s) => s.endsWith(':delete')) && (
-          <p className="text-sm text-amber-300">
-            This connection includes permission to permanently delete content.
-          </p>
-        )}
-        {scopes.includes('inbox:read') && (
-          <p className="text-sm text-amber-300">
-            This connection can read private customer contact details.
-          </p>
-        )}
         <p className="text-sm text-zinc-400">
           You can revoke this connection at any time from Agent control.
         </p>
