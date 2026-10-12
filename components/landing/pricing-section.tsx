@@ -7,7 +7,7 @@ const plans = [
   {
     name: "Starter",
     description: "For simple sites and smaller launches",
-    price: { monthly: 80, annual: 72 },
+    price: { monthly: 1500, annual: 1350 },
     features: [
       "WordPress website",
       "Responsive design",
@@ -21,7 +21,7 @@ const plans = [
   {
     name: "Growth",
     description: "For full-stack custom builds and growth sites",
-    price: { monthly: 99, annual: 89 },
+    price: { monthly: 4500, annual: 4050 },
     features: [
       "Custom Next.js or Node stack",
       "Performance-first build",
@@ -35,7 +35,7 @@ const plans = [
   {
     name: "Figma to Code",
     description: "For design files that need real implementation",
-    price: { monthly: 69, annual: 62 },
+    price: { monthly: 2500, annual: 2250 },
     features: [
       "From your Figma file",
       "Pixel aligned output",
