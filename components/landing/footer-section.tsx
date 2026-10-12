@@ -2,15 +2,11 @@
 
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { navLinks, siteEmail } from "@/lib/nav-links";
+import { siteEmail } from "@/lib/nav-links";
+import { serviceCatalog } from "@/lib/service-catalog";
 
 const footerLinks = {
-  Services: [
-    { name: "WordPress Websites", href: "/#features" },
-    { name: "Custom Development", href: "/#features" },
-    { name: "Figma to Code", href: "/#features" },
-    { name: "AWS & Agents", href: "/#features" },
-  ],
+  Services: serviceCatalog.map(({ name }) => ({ name, href: "/#features" })),
   Company: [
     { name: "About", href: "/#about" },
     { name: "Projects", href: "/projects" },

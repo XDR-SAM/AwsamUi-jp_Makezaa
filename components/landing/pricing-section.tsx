@@ -1,55 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { ArrowRight, Check, Zap } from "lucide-react";
-
-const plans = [
-  {
-    name: "Starter",
-    description: "For simple sites and smaller launches",
-    price: { monthly: 1500, annual: 1350 },
-    features: [
-      "WordPress website",
-      "Responsive design",
-      "Basic SEO setup",
-      "1 revision round",
-      "7 day delivery",
-    ],
-    cta: "Start starter",
-    highlight: false,
-  },
-  {
-    name: "Growth",
-    description: "For full-stack custom builds and growth sites",
-    price: { monthly: 4500, annual: 4050 },
-    features: [
-      "Custom Next.js or Node stack",
-      "Performance-first build",
-      "CMS or admin panel",
-      "2 revision rounds",
-      "Analytics ready",
-    ],
-    cta: "Start growth",
-    highlight: true,
-  },
-  {
-    name: "Figma to Code",
-    description: "For design files that need real implementation",
-    price: { monthly: 2500, annual: 2250 },
-    features: [
-      "From your Figma file",
-      "Pixel aligned output",
-      "Accessible layout",
-      "Clean component structure",
-      "Delivery with notes",
-    ],
-    cta: "Start conversion",
-    highlight: false,
-  },
-];
+import { serviceCatalog, formatServicePrice, serviceBillingLabel } from "@/lib/service-catalog";
 
 export function PricingSection() {
-  const [isAnnual, setIsAnnual] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
@@ -84,19 +40,26 @@ export function PricingSection() {
             </h2>
           </div>
 
-          <div className="lg:col-span-5 relative p-0 h-96 lg:h-auto" />
+          <div className="lg:col-span-5 lg:self-end">
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              Clear starting prices for focused projects and ongoing growth. We agree on scope, deliverables, and timeline before work begins.
+            </p>
+            <p className="text-sm text-muted-foreground mt-4">
+              All prices are in USD. Advertising spend, platform subscriptions, and cloud usage are quoted separately.
+            </p>
+          </div>
         </div>
 
-        {/* Pricing cards - Horizontal layout with overlap */}
+        {/* Service pricing uses the same catalog as the cards below the hero. */}
         <div className="relative">
-          <div className="grid md:grid-cols-3 gap-4 lg:gap-0">
-            {plans.map((plan, index) => (
+          <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
+            {serviceCatalog.map((plan, index) => (
               <div
-                key={plan.name}
-                className={`relative bg-background border transition-all duration-700 ${
+                key={plan.id}
+                className={`relative bg-background border flex flex-col transition-all duration-700 ${
                   plan.highlight
-                    ? "border-foreground md:-mx-2 md:z-10 md:scale-105"
-                    : "border-foreground/10 md:first:-mr-2 md:last:-ml-2"
+                    ? "border-foreground"
+                    : "border-foreground/10"
                 } ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
@@ -104,31 +67,29 @@ export function PricingSection() {
                   <div className="absolute -top-4 left-8 right-8 flex justify-center">
                     <span className="inline-flex items-center gap-2 px-4 py-2 bg-foreground text-background text-xs font-mono uppercase tracking-widest">
                       <Zap className="w-3 h-3" />
-                      Most Popular
+                      Custom Build
                     </span>
                   </div>
                 )}
 
-                <div className="p-8 lg:p-10">
+                <div className="p-6 lg:p-8 flex flex-col flex-1">
                   {/* Plan header */}
                   <div className="mb-8 pb-8 border-b border-foreground/10">
                     <span className="font-mono text-xs text-muted-foreground">
                       {String(index + 1).padStart(2, "0")}
                     </span>
-                    <h3 className="text-2xl lg:text-3xl font-display mt-2">{plan.name}</h3>
+                    <h3 className="text-2xl font-display mt-2">{plan.name}</h3>
                     <p className="text-sm text-muted-foreground mt-2">{plan.description}</p>
                   </div>
 
                   {/* Price */}
                   <div className="mb-8">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-5xl lg:text-6xl font-display">
-                        ${isAnnual ? plan.price.annual : plan.price.monthly}
-                      </span>
-                      <span className="text-muted-foreground text-sm">/month</span>
+                    <p className="text-xs text-muted-foreground font-mono mb-2">Starting from</p>
+                    <div className="text-4xl font-display tracking-tight whitespace-nowrap">
+                      {formatServicePrice(plan.startingPrice)}
                     </div>
                     <p className="text-xs text-muted-foreground mt-2 font-mono">
-                      {isAnnual ? "billed annually" : "billed monthly"}
+                      {serviceBillingLabel(plan.billing)}
                     </p>
                   </div>
 
@@ -143,16 +104,18 @@ export function PricingSection() {
                   </ul>
 
                   {/* CTA */}
-                  <button
-                    className={`w-full py-4 flex items-center justify-center gap-2 text-sm font-medium transition-all group ${
+                  <Link
+                    href="/contact#contact-form"
+                    aria-label={`Get a quote for ${plan.name}`}
+                    className={`w-full mt-auto py-4 flex items-center justify-center gap-2 text-sm font-medium transition-all group ${
                       plan.highlight
                         ? "bg-foreground text-background hover:bg-foreground/90"
                         : "border border-foreground/20 text-foreground hover:border-foreground hover:bg-foreground/5"
                     }`}
                   >
-                    {plan.cta}
+                    Get a quote
                     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                  </button>
+                  </Link>
                 </div>
               </div>
             ))}

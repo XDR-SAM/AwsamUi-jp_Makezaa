@@ -1,33 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
-const features = [
-  {
-    number: "01",
-    title: "WordPress Websites",
-    description: "Modern, fast, fully responsive WordPress sites with custom design, easy content management, SEO-friendly structure, and e-commerce support.",
-    stats: { value: "$80+", label: "starting from" },
-  },
-  {
-    number: "02",
-    title: "Custom Web Development",
-    description: "Premium full-stack development with speed, SEO, and conversion in focus. Clean-coded, mobile responsive websites built to scale.",
-    stats: { value: "$99+", label: "starting from" },
-  },
-  {
-    number: "03",
-    title: "Figma to Code",
-    description: "Pixel-perfect implementation from your Figma designs. React/Next.js builds with responsive layout, accessibility, and maintainable code.",
-    stats: { value: "$69+", label: "starting from" },
-  },
-  {
-    number: "04",
-    title: "AWS & Agent Deployment",
-    description: "We deploy and manage business agents on AWS, including setups for Hermes, OpenClaw, and custom agent runtimes.",
-    stats: { value: "AWS", label: "backed" },
-  },
-];
+import { serviceCatalog, formatServicePrice, serviceBillingLabel } from "@/lib/service-catalog";
 
 // Floating dot particles visualization
 function ParticleVisualization() {
@@ -130,7 +104,6 @@ function ParticleVisualization() {
 
 export function FeaturesSection() {
   const [isVisible, setIsVisible] = useState(false);
-  const [activeFeature, setActiveFeature] = useState(0);
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -182,25 +155,25 @@ export function FeaturesSection() {
 
         {/* Bento Grid Layout */}
         <div className="grid grid-cols-12 gap-4 lg:gap-6">
-          {features.map((feature, index) => (
+          {serviceCatalog.map((feature, index) => (
             <div
-              key={feature.title}
-              className={`col-span-6 md:col-span-4 lg:col-span-3 relative bg-black border border-foreground/10 overflow-hidden group transition-all duration-700 flex flex-col ${
+              key={feature.id}
+              className={`col-span-12 sm:col-span-6 xl:col-span-3 relative bg-black border border-foreground/10 overflow-hidden group transition-all duration-700 flex flex-col ${
                 isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
               }`}
               style={{ transitionDelay: `${index * 100}ms` }}
             >
-              <div className="relative flex-1 p-8 lg:p-12 bg-black">
-                <span className="font-mono text-sm text-muted-foreground">{feature.number}</span>
+              <div className="relative flex-1 p-8 xl:p-10 bg-black flex flex-col">
+                <span className="font-mono text-sm text-muted-foreground">{String(index + 1).padStart(2, "0")}</span>
                 <h3 className="text-2xl lg:text-3xl font-display mt-4 mb-4 group-hover:translate-x-2 transition-transform duration-500">
-                  {feature.title}
+                  {feature.name}
                 </h3>
                 <p className="text-base text-muted-foreground leading-relaxed max-w-md mb-8">
                   {feature.description}
                 </p>
-                <div>
-                  <span className="text-4xl lg:text-5xl font-display">{feature.stats.value}</span>
-                  <span className="block text-sm text-muted-foreground font-mono mt-2">{feature.stats.label}</span>
+                <div className="mt-auto">
+                  <span className="text-4xl 2xl:text-5xl font-display tracking-tight whitespace-nowrap">{formatServicePrice(feature.startingPrice)}+</span>
+                  <span className="block text-sm text-muted-foreground font-mono mt-2">starting from · {serviceBillingLabel(feature.billing)}</span>
                 </div>
               </div>
             </div>
