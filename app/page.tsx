@@ -1,53 +1,54 @@
 import { Navigation } from "@/components/landing/navigation";
-import { HeroSection } from "@/components/landing/hero-section";
-import { FeaturesSection } from "@/components/landing/features-section";
-import { HowItWorksSection } from "@/components/landing/how-it-works-section";
-import { InfrastructureSection } from "@/components/landing/infrastructure-section";
-import { MetricsSection } from "@/components/landing/metrics-section";
-import { IntegrationsSection } from "@/components/landing/integrations-section";
-import { SecuritySection } from "@/components/landing/security-section";
-import { DevelopersSection } from "@/components/landing/developers-section";
-import { TestimonialsSection } from "@/components/landing/testimonials-section";
-import { ProjectsPreviewSection } from "@/components/landing/projects-preview-section";
-import { BlogPreviewSection } from "@/components/landing/blog-preview-section";
-import { PricingSection } from "@/components/landing/pricing-section";
-import { CtaSection } from "@/components/landing/cta-section";
+import { StudioMotion } from "@/components/studio/motion";
+import { StudioLoader } from "@/components/studio/loader";
+import { StudioHero } from "@/components/studio/hero";
+import { StudioReel } from "@/components/studio/reel";
+import { StudioAbout } from "@/components/studio/about";
+import { StudioServices } from "@/components/studio/services";
+import { StudioProcess } from "@/components/studio/process";
+import { StudioStandards } from "@/components/studio/standards";
+import { StudioTestimonials } from "@/components/studio/testimonials";
+import { StudioProjects } from "@/components/studio/projects";
+import { StudioInsights } from "@/components/studio/editorial";
+import { StudioFaq } from "@/components/studio/faq";
+import { StudioCta } from "@/components/studio/cta";
 import { FooterSection } from "@/components/landing/footer-section";
 import { getRecentPosts } from "@/lib/blog";
 import { getRecentProjects } from "@/lib/projects";
-import { JsonLd } from '@/components/json-ld';
-import { pageMetadata, siteSchema, SITE_DESCRIPTION } from '@/lib/seo';
+import { JsonLd } from "@/components/json-ld";
+import { pageMetadata, siteSchema, SITE_DESCRIPTION } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
-  ...pageMetadata('Web Development & Digital Solutions', SITE_DESCRIPTION, '/'),
-  title: { absolute: 'Makezaa | Web Development & Digital Solutions' },
+  ...pageMetadata("Web Development & Digital Solutions", SITE_DESCRIPTION, "/"),
+  title: { absolute: "Makezaa | Web Development & Digital Solutions" },
 };
 
 export default async function Home() {
   const [posts, projects] = await Promise.all([
     getRecentPosts(3),
-    getRecentProjects(3),
+    getRecentProjects(5),
   ]);
 
   return (
-    <main className="relative min-h-screen overflow-x-hidden">
-      <JsonLd data={siteSchema()} />
-      <Navigation />
-      <HeroSection />
-      <FeaturesSection />
-      <HowItWorksSection />
-      <InfrastructureSection />
-      <MetricsSection />
-      <IntegrationsSection />
-      <SecuritySection />
-      <DevelopersSection />
-      <ProjectsPreviewSection projects={projects} />
-      <TestimonialsSection />
-      <BlogPreviewSection posts={posts} />
-      <PricingSection />
-      <CtaSection />
-      <FooterSection />
-    </main>
+    <StudioMotion>
+      <main>
+        <JsonLd data={siteSchema()} />
+        <Navigation />
+        <StudioLoader />
+        <StudioHero />
+        <StudioReel />
+        <StudioAbout />
+        <StudioServices />
+        <StudioProcess />
+        <StudioStandards />
+        <StudioTestimonials />
+        <StudioProjects projects={projects} />
+        <StudioInsights posts={posts} />
+        <StudioFaq />
+        <StudioCta />
+        <FooterSection />
+      </main>
+    </StudioMotion>
   );
 }

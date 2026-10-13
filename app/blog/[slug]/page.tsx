@@ -1,105 +1,101 @@
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { Navigation } from '@/components/landing/navigation';
-import { FooterSection } from '@/components/landing/footer-section';
-import { CmsContent } from '@/components/cms-content';
-import { getPostBySlug, getPublishedPosts } from '@/lib/blog';
-import { Calendar, ArrowLeft, ArrowRight } from 'lucide-react';
-import { JsonLd } from '@/components/json-ld';
-import { postMetadata, postSchema, PRIVATE_ROBOTS } from '@/lib/seo';
-
-export const dynamic = 'force-dynamic';
-
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Navigation } from "@/components/landing/navigation";
+import { FooterSection } from "@/components/landing/footer-section";
+import { CmsContent } from "@/components/cms-content";
+import { StudioMotion, SplitText } from "@/components/studio/motion";
+import { getPostBySlug, getPublishedPosts } from "@/lib/blog";
+import { JsonLd } from "@/components/json-ld";
+import { postMetadata, postSchema, PRIVATE_ROBOTS } from "@/lib/seo";
+export const dynamic = "force-dynamic";
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
-  if (!post) return { title: 'Post Not Found', robots: PRIVATE_ROBOTS };
-  return postMetadata(post);
+  return post
+    ? postMetadata(post)
+    : { title: "Post Not Found", robots: PRIVATE_ROBOTS };
 }
-
-export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+const date = (value: string) =>
+  new Date(value).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "Asia/Dhaka",
+  });
+export default async function BlogPostPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) notFound();
-
-  const allPosts = await getPublishedPosts();
-  const relatedPosts = allPosts.filter(p => p.id !== post.id).slice(0, 3);
-
+  const related = (await getPublishedPosts())
+    .filter((p) => p.id !== post.id)
+    .slice(0, 3);
   return (
-    <main className="relative min-h-screen overflow-x-hidden">
-      <JsonLd data={postSchema(post)} />
-      <Navigation />
-      <article className="pt-32 pb-20 px-6">
-        <div className="max-w-3xl mx-auto">
-          <Link
-            href="/blog"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
-          >
-            <ArrowLeft size={14} /> Back to blog
-          </Link>
-
-          {post.cover_image && (
-            <div className="rounded-2xl overflow-hidden border border-border mb-8">
-              <img src={post.cover_image} alt={post.title} className="w-full h-64 md:h-80 object-cover" />
+    <StudioMotion>
+      <main id="top" data-nav-theme="light">
+        <JsonLd data={postSchema(post)} />
+        <Navigation />
+        <article className="studio-article">
+          <header className="studio-article-header">
+            <Link href="/blog" className="eyebrow">
+              ← Back to insights
+            </Link>
+            <div className="article-info">
+              <time dateTime={post.created_at}>{date(post.created_at)}</time>
+              <span>
+                By <Link href="/">Makezaa Studio</Link>
+              </span>
+              <span>
+                Updated{" "}
+                <time dateTime={post.updated_at}>{date(post.updated_at)}</time>
+              </span>
             </div>
-          )}
-
-          <header className="mb-10">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-              <Calendar size={14} />
-              <time dateTime={post.created_at}>{new Date(post.created_at).toLocaleDateString('en-US', {
-                year: 'numeric', month: 'long', day: 'numeric',
-              })}</time>
-            </div>
-            <p className="text-sm text-muted-foreground mb-4">By <Link href="/" className="hover:text-foreground">Makezaa</Link>
-              {' · Updated '}<time dateTime={post.updated_at}>{new Date(post.updated_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
-            </p>
-            <h1 className="font-display text-3xl md:text-5xl text-foreground tracking-tight leading-tight">
-              {post.title}
+            <h1>
+              <SplitText text={post.title} />
             </h1>
-            {post.excerpt && (
-              <p className="text-lg text-muted-foreground mt-4">{post.excerpt}</p>
-            )}
-            {post.tags && post.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-5">
-                {post.tags.map(tag => (
-                  <span key={tag} className="text-xs px-3 py-1 rounded-full border border-border text-muted-foreground">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
+            {post.excerpt ? (
+              <p className="detail-description">{post.excerpt}</p>
+            ) : null}
+            <div className="detail-tags">
+              {post.tags?.map((tag) => (
+                <span key={tag}>{tag}</span>
+              ))}
+            </div>
           </header>
-
-          {post.content && <CmsContent html={post.content} />}
-
-          {relatedPosts.length > 0 && (
-            <section className="mt-16 pt-10 border-t border-border">
-              <h2 className="text-sm font-mono text-muted-foreground uppercase tracking-wider mb-6">More posts</h2>
-              <div className="space-y-4">
-                {relatedPosts.map(related => (
-                  <Link
-                    key={related.id}
-                    href={`/blog/${related.slug}`}
-                    className="group flex items-center justify-between p-4 rounded-xl border border-border hover:border-foreground/20 hover:bg-card/40 transition-all"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-foreground group-hover:text-white transition-colors truncate">
-                        {related.title}
-                      </p>
-                      {related.excerpt && (
-                        <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{related.excerpt}</p>
-                      )}
-                    </div>
-                    <ArrowRight size={14} className="text-muted-foreground shrink-0 ml-4 group-hover:translate-x-0.5 transition-transform" />
-                  </Link>
-                ))}
-              </div>
+          {post.cover_image ? (
+            <img
+              className="article-cover"
+              src={post.cover_image}
+              alt={post.title}
+              fetchPriority="high"
+            />
+          ) : null}
+          {post.content ? <CmsContent html={post.content} /> : null}
+          {related.length ? (
+            <section className="studio-related">
+              <h2>Keep exploring.</h2>
+              {related.map((p) => (
+                <Link
+                  className="related-link"
+                  href={`/blog/${p.slug}`}
+                  key={p.id}
+                >
+                  <span>{p.title}</span>
+                  <span>↗</span>
+                </Link>
+              ))}
             </section>
-          )}
-        </div>
-      </article>
-      <FooterSection />
-    </main>
+          ) : null}
+        </article>
+        <FooterSection />
+      </main>
+    </StudioMotion>
   );
 }

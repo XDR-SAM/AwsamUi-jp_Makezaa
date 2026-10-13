@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Loader2, CheckCircle2, Calendar, Send } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useId, useState } from "react";
+import { Loader2, CheckCircle2, Calendar, Send } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-type FormType = 'meeting' | 'contact';
+type FormType = "meeting" | "contact";
 
 interface LeadFormProps {
   type: FormType;
@@ -12,26 +12,27 @@ interface LeadFormProps {
 }
 
 export function LeadForm({ type, compact = false }: LeadFormProps) {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [company, setCompany] = useState('');
-  const [message, setMessage] = useState('');
-  const [preferredDate, setPreferredDate] = useState('');
-  const [preferredTime, setPreferredTime] = useState('');
+  const formId = useId();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [company, setCompany] = useState("");
+  const [message, setMessage] = useState("");
+  const [preferredDate, setPreferredDate] = useState("");
+  const [preferredTime, setPreferredTime] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const isMeeting = type === 'meeting';
+  const isMeeting = type === "meeting";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !email.trim()) {
-      setError('Name and email are required.');
+      setError("Name and email are required.");
       return;
     }
     if (isMeeting && !message.trim()) {
-      setError('Please tell us what you want to discuss.');
+      setError("Please tell us what you want to discuss.");
       return;
     }
 
@@ -39,9 +40,9 @@ export function LeadForm({ type, compact = false }: LeadFormProps) {
     setError(null);
 
     try {
-      const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           type,
           name: name.trim(),
@@ -53,17 +54,21 @@ export function LeadForm({ type, compact = false }: LeadFormProps) {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Submission failed');
+      if (!res.ok) throw new Error(data.error || "Submission failed");
 
       setSuccess(true);
-      setName('');
-      setEmail('');
-      setCompany('');
-      setMessage('');
-      setPreferredDate('');
-      setPreferredTime('');
+      setName("");
+      setEmail("");
+      setCompany("");
+      setMessage("");
+      setPreferredDate("");
+      setPreferredTime("");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again.",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -71,12 +76,18 @@ export function LeadForm({ type, compact = false }: LeadFormProps) {
 
   if (success) {
     return (
-      <div className={`rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-6 ${compact ? '' : 'p-8'}`}>
+      <div
+        role="status"
+        className={`rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-6 ${compact ? "" : "p-8"}`}
+      >
         <div className="flex items-start gap-3">
-          <CheckCircle2 className="text-emerald-400 shrink-0 mt-0.5" size={22} />
+          <CheckCircle2
+            className="text-emerald-400 shrink-0 mt-0.5"
+            size={22}
+          />
           <div>
             <p className="font-medium text-foreground">
-              {isMeeting ? 'Meeting request sent!' : 'Message sent!'}
+              {isMeeting ? "Meeting request sent!" : "Message sent!"}
             </p>
             <p className="text-sm text-muted-foreground mt-1">
               {isMeeting
@@ -97,31 +108,56 @@ export function LeadForm({ type, compact = false }: LeadFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className={`space-y-4 ${compact ? 'max-w-lg' : 'max-w-xl'}`}>
+    <form
+      aria-label={isMeeting ? "Request a free meeting" : "Send a message"}
+      onSubmit={handleSubmit}
+      className={`studio-lead-form space-y-4 ${compact ? "max-w-lg" : "max-w-xl"}`}
+    >
       {error && (
-        <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+        <div
+          role="alert"
+          className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-700 text-sm"
+        >
           {error}
         </div>
       )}
 
-      <div className={compact ? 'space-y-3' : 'grid grid-cols-1 sm:grid-cols-2 gap-4'}>
-        <div className={compact ? '' : 'sm:col-span-1'}>
-          <label className="block text-xs font-medium text-muted-foreground mb-1.5">Name *</label>
+      <div
+        className={
+          compact ? "space-y-3" : "grid grid-cols-1 sm:grid-cols-2 gap-4"
+        }
+      >
+        <div className={compact ? "" : "sm:col-span-1"}>
+          <label
+            htmlFor={`${formId}-name`}
+            className="block text-xs font-medium text-muted-foreground mb-1.5"
+          >
+            Name *
+          </label>
           <input
             type="text"
+            id={`${formId}-name`}
+            autoComplete="name"
             value={name}
-            onChange={e => setName(e.target.value)}
+            onChange={(e) => setName(e.target.value)}
             required
             placeholder="Your name"
             className="w-full bg-background/60 border border-border rounded-lg px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-foreground/30 transition-colors"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-muted-foreground mb-1.5">Email *</label>
+          <label
+            htmlFor={`${formId}-email`}
+            className="block text-xs font-medium text-muted-foreground mb-1.5"
+          >
+            Email *
+          </label>
           <input
             type="email"
+            id={`${formId}-email`}
+            autoComplete="email"
             value={email}
-            onChange={e => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
             required
             placeholder="you@company.com"
             className="w-full bg-background/60 border border-border rounded-lg px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-foreground/30 transition-colors"
@@ -132,31 +168,50 @@ export function LeadForm({ type, compact = false }: LeadFormProps) {
       {isMeeting && (
         <>
           <div>
-            <label className="block text-xs font-medium text-muted-foreground mb-1.5">Company</label>
+            <label
+              htmlFor={`${formId}-company`}
+              className="block text-xs font-medium text-muted-foreground mb-1.5"
+            >
+              Company
+            </label>
             <input
+              id={`${formId}-company`}
+              autoComplete="organization"
               type="text"
               value={company}
-              onChange={e => setCompany(e.target.value)}
+              onChange={(e) => setCompany(e.target.value)}
               placeholder="Optional"
               className="w-full bg-background/60 border border-border rounded-lg px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-foreground/30 transition-colors"
             />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-muted-foreground mb-1.5">Preferred date</label>
+              <label
+                htmlFor={`${formId}-date`}
+                className="block text-xs font-medium text-muted-foreground mb-1.5"
+              >
+                Preferred date
+              </label>
               <input
                 type="date"
+                id={`${formId}-date`}
                 value={preferredDate}
-                onChange={e => setPreferredDate(e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
+                onChange={(e) => setPreferredDate(e.target.value)}
+                min={new Date().toISOString().split("T")[0]}
                 className="w-full bg-background/60 border border-border rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:border-foreground/30 transition-colors"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-muted-foreground mb-1.5">Preferred time</label>
+              <label
+                htmlFor={`${formId}-time`}
+                className="block text-xs font-medium text-muted-foreground mb-1.5"
+              >
+                Preferred time
+              </label>
               <select
+                id={`${formId}-time`}
                 value={preferredTime}
-                onChange={e => setPreferredTime(e.target.value)}
+                onChange={(e) => setPreferredTime(e.target.value)}
                 className="w-full bg-background/60 border border-border rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:border-foreground/30 transition-colors"
               >
                 <option value="">Select a time</option>
@@ -174,15 +229,23 @@ export function LeadForm({ type, compact = false }: LeadFormProps) {
       )}
 
       <div>
-        <label className="block text-xs font-medium text-muted-foreground mb-1.5">
-          {isMeeting ? 'What would you like to discuss? *' : 'Message *'}
+        <label
+          htmlFor={`${formId}-message`}
+          className="block text-xs font-medium text-muted-foreground mb-1.5"
+        >
+          {isMeeting ? "What would you like to discuss? *" : "Message *"}
         </label>
         <textarea
+          id={`${formId}-message`}
           value={message}
-          onChange={e => setMessage(e.target.value)}
+          onChange={(e) => setMessage(e.target.value)}
           required={!isMeeting}
           rows={compact ? 3 : 4}
-          placeholder={isMeeting ? 'Briefly describe your project or question…' : 'How can we help?'}
+          placeholder={
+            isMeeting
+              ? "Briefly describe your project or question…"
+              : "How can we help?"
+          }
           className="w-full bg-background/60 border border-border rounded-lg px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-foreground/30 resize-none transition-colors"
         />
       </div>
@@ -190,8 +253,8 @@ export function LeadForm({ type, compact = false }: LeadFormProps) {
       <Button
         type="submit"
         disabled={submitting}
-        size={compact ? 'default' : 'lg'}
-        className={`rounded-full ${compact ? '' : 'h-12 px-8'} bg-foreground hover:bg-foreground/90 text-background`}
+        size={compact ? "default" : "lg"}
+        className={`rounded-full ${compact ? "" : "h-12 px-8"} bg-foreground hover:bg-foreground/90 text-background`}
       >
         {submitting ? (
           <Loader2 size={16} className="animate-spin" />
