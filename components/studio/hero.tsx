@@ -37,7 +37,7 @@ export function StudioHero() {
           </span>
           <span className="hero-line hero-line-middle">
             <span className="hero-mini-film" id="hero-film-anchor">
-              <img src={studioAssets.loaderImages[0]} alt="" />
+              <img src={studioAssets.heroFilmPoster} alt="" />
             </span>
             <SplitText text="high — impact" />
           </span>

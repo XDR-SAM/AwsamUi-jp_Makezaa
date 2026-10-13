@@ -1,11 +1,9 @@
 // Local media, served by Next.js. The Framer app/router is not embedded.
 export const studioAssets = {
   heroBackground: "/studio/makezaa/hero-background.webp",
-  heroFilmPoster:
-    "/studio/framerusercontent.com/images/aPvkTvkAnIV33oaKEEqrDRPbY__0ce7b1cb6a82.png",
-  heroFilm:
-    "/studio/stream.mux.com/921N3eqnEGvaG6c735ET923SDF5OMbSeYls00HTIQ2Cg/1080p.mp4",
-  reel: "/studio/stream.mux.com/NK902P1FV71RSNwUOJxq11aMWzCN6GjiI89kynjcRQyc/480p.mp4",
+  heroFilmPoster: "/studio/makezaa/hero-video-poster.webp",
+  heroFilm: "/studio/makezaa/hero-preview.mp4",
+  reel: "/studio/makezaa/studio-reel.mp4",
   serviceWeb:
     "/studio/stream.mux.com/BP0200Otu1K9wAS3EYw00ewY7oNNy4gBzZiQqh758BrbsQ/1080p.mp4",
   serviceCommerce:

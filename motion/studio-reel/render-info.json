@@ -1,0 +1,20 @@
+{
+  "hero": {
+    "file": "hero-preview.mp4",
+    "width": 1920,
+    "height": 1080,
+    "frames": 449,
+    "fps": 30.072625278419228,
+    "duration": 14.930522222222221,
+    "bytes": 5186118
+  },
+  "reel": {
+    "file": "studio-reel.mp4",
+    "width": 1920,
+    "height": 1080,
+    "frames": 720,
+    "fps": 30.03392721407516,
+    "duration": 23.97288888888889,
+    "bytes": 4762108
+  }
+}

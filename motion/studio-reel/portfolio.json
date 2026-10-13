@@ -1,0 +1,60 @@
+[
+  {
+    "path": "/projects/an-noor-charity-donation-platform-with-payment-integration",
+    "title": "An-Noor – Charity & Donation Platform with Payment Integration / CMS: WordPress",
+    "image": "https://yjiybdonnpeenrggamvl.supabase.co/storage/v1/object/public/blog-images/1785503693489-x466hx66a3.png",
+    "file": "assets/project-0.webp"
+  },
+  {
+    "path": "/projects/campusflow-bangladesh-university",
+    "title": "Campusflow for Bangladesh University / Web App",
+    "image": "https://yjiybdonnpeenrggamvl.supabase.co/storage/v1/object/public/blog-images/1780849404671-rg9gkkp5ycj.png",
+    "file": "assets/project-1.webp",
+    "extraFiles": []
+  },
+  {
+    "path": "/projects/nike-air-max-showcase",
+    "title": "Nike Air Max Showcase / HTML5",
+    "image": "https://yjiybdonnpeenrggamvl.supabase.co/storage/v1/object/public/blog-images/1780847944590-j79ezvlt8t.png",
+    "file": "assets/project-2.webp"
+  },
+  {
+    "path": "/projects/makezaa-agent-ready-web-platform",
+    "title": "Makezaa — Agent-Ready Web Platform / Next.js",
+    "image": "https://yjiybdonnpeenrggamvl.supabase.co/storage/v1/object/public/blog-images/1780833748705-81fcmtlsmmt.jpg",
+    "file": "assets/project-3.webp"
+  },
+  {
+    "path": "/projects/golden-touch-contractors-wordpress-project",
+    "title": "Golden Touch Contractors — WordPress Site for a NYC Roofing Brand / WordPress",
+    "image": "https://yjiybdonnpeenrggamvl.supabase.co/storage/v1/object/public/blog-images/1780821880758-os83vs2nlei.jpg",
+    "file": "assets/project-4.webp"
+  },
+  {
+    "path": "/projects/lpg-manager-bd-cylinder-distribution-godown-erp",
+    "title": "LPG Manager BD — Cylinder Distribution & Godown ERP / React",
+    "image": "https://yjiybdonnpeenrggamvl.supabase.co/storage/v1/object/public/blog-images/agents/7a76abdd8d34a5e610e7d771a446a8bd1fedec5d0bcb80c2fe2b5346924f5568-c278e7dba29fb986226809d6a772a4b62552cdc5408b6152a140c025411720fe.jpg",
+    "file": "assets/project-5.webp",
+    "extraFiles": [
+      "assets/project-5-0.webp",
+      "assets/project-5-1.webp"
+    ]
+  },
+  {
+    "path": "/projects/eagle-golfferdir-animated-golf-travel-website",
+    "title": "Eagle Golfferðir — Animated Golf Travel Website / HTML5",
+    "image": "https://yjiybdonnpeenrggamvl.supabase.co/storage/v1/object/public/blog-images/agents/903947535a710366ad69526f8d31c35b01d73983aff455b61f6000d0be99713f-ed284c8da9d293b39c8911a30c68f6116ca12d9a52c0b7467c4f74cafcbd3086.jpg",
+    "file": "assets/project-6.webp",
+    "extraFiles": [
+      "assets/project-6-0.webp",
+      "assets/project-6-1.webp",
+      "assets/project-6-2.webp"
+    ]
+  },
+  {
+    "path": "/projects/typed-decision-reliability-cfpb-temporal-shift-feasibility-pilot",
+    "title": "Typed Decision Reliability — CFPB Temporal-Shift Feasibility Pilot / Python",
+    "image": "https://raw.githubusercontent.com/XDR-SAM/Typed-decision-reliability-Research-Study/main/research-project/outputs/figures/temporal_metrics.png",
+    "file": "assets/project-7.webp"
+  }
+]

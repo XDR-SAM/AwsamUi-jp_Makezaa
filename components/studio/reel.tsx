@@ -99,7 +99,7 @@ export function StudioReel() {
               />
               <div className="reel-controls" inert={!interactive}>
                 <div className="reel-shade" />
-                <span className="reel-duration">[ 00:44 ]</span>
+                <span className="reel-duration">[ 00:24 ]</span>
                 <button
                   ref={trigger}
                   className="reel-play"

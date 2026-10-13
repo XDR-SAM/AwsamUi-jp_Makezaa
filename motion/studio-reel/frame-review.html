@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Makezaa reel frame review</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#141414;color:#eee;font:15px system-ui}main{padding:24px;max-width:1200px;margin:auto}h1{font-size:22px;font-weight:500}#stage{aspect-ratio:16/9;background:black;width:100%;overflow:hidden}video{width:100%;height:100%;object-fit:contain}label{display:inline-flex;gap:10px;margin:20px 24px 0 0;align-items:center}select,button{font:inherit;padding:8px;background:#292929;color:white;border:1px solid #555;border-radius:6px}input{width:65vw;max-width:800px}output{font-variant-numeric:tabular-nums}.render main{padding:0;margin:0;max-width:none}.render h1,.render .controls{display:none}.render #stage{width:1920px;height:1080px}
+</style>
+<main><h1>Makezaa motion / frame review</h1><div id="stage"><video id="film" muted playsinline preload="auto"></video></div><div class="controls"><label>Video<select id="mode"><option value="hero">Hero preview</option><option value="reel">Full reel</option></select></label><label>Version<select id="version"><option value="makezaa">Makezaa</option><option value="reference">Reference</option></select></label><button id="play">Play / pause</button><p><label>Time<input id="time" type="range" min="0" max="14.9" step="0.033"></label><output id="clock">0.00s</output></p></div></main>
+<script>
+const film=document.querySelector('#film'),mode=document.querySelector('#mode'),version=document.querySelector('#version'),time=document.querySelector('#time'),clock=document.querySelector('#clock');
+document.documentElement.classList.toggle('render',new URLSearchParams(location.search).has('render'));
+const publicRoot=location.protocol==='file:'?new URL('../../public/',location.href).href:location.origin+'/';
+const movies={hero:{makezaa:'studio/makezaa/hero-preview.mp4',reference:'studio/stream.mux.com/921N3eqnEGvaG6c735ET923SDF5OMbSeYls00HTIQ2Cg/1080p.mp4',duration:14.930522222222221},reel:{makezaa:'studio/makezaa/studio-reel.mp4',reference:'studio/stream.mux.com/NK902P1FV71RSNwUOJxq11aMWzCN6GjiI89kynjcRQyc/1080p.mp4',duration:23.97288888888889}};
+function load(){film.pause();const movie=movies[mode.value];window.VIDEO={w:1920,h:1080,duration:movie.duration};film.src=publicRoot+movie[version.value];time.max=movie.duration-.034;time.value=0;clock.value='0.00s'}
+// Any frame can be inspected independently, including out of order.
+window.seek=async(t)=>{film.pause();const target=Math.max(0,Math.min(VIDEO.duration-.034,t));if(film.readyState<1)await new Promise(resolve=>film.addEventListener('loadedmetadata',resolve,{once:true}));if(Math.abs(film.currentTime-target)>.0001)await new Promise(resolve=>{film.addEventListener('seeked',resolve,{once:true});film.currentTime=target});time.value=target;clock.value=target.toFixed(2)+'s'};
+mode.onchange=version.onchange=load;time.oninput=()=>seek(Number(time.value));document.querySelector('#play').onclick=()=>film.paused?film.play():film.pause();film.ontimeupdate=()=>{time.value=film.currentTime;clock.value=film.currentTime.toFixed(2)+'s'};load();
+</script>
+</html>

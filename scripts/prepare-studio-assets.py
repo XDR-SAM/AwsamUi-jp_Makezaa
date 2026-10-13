@@ -21,9 +21,9 @@ def media(fragment,preferred=''):
     return matches[0][1]
 named={
  'heroBackground':'/studio/makezaa/hero-background.webp',
- 'heroFilmPoster':media('aPvkTvk','scale-down-to=2048'),
- 'heroFilm':media('921N3eq','1080p'),
- 'reel':media('NK902P1','480p'),
+ 'heroFilmPoster':'/studio/makezaa/hero-video-poster.webp',
+ 'heroFilm':'/studio/makezaa/hero-preview.mp4',
+ 'reel':'/studio/makezaa/studio-reel.mp4',
  'serviceWeb':media('BP0200Otu','1080p'),
  'serviceCommerce':media('SJ2mU2I','1080p'),
  'serviceMotion':media('jeHaeZGX','1080p'),
