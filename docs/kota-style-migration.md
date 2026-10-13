@@ -39,4 +39,6 @@ node scripts/verify-studio.mjs
 
 The HTTP verification script expects port 3000. It checks public routes, real project/article pages, existing redirects and home anchors, native rendering, missing local assets, and an empty contact request rejected before persistence. It does not create a customer message or meeting request. Browser verification covers desktop/mobile layout, project filtering, shared-image detail navigation, multi-image thumbnail scrolling, the information drawer, related project navigation, article rendering, the showreel modal, FAQ disclosure and route transitions.
 
+Vercel installs with pnpm and a frozen lockfile. When changing dependencies, update and commit both lockfiles; verify `pnpm install --frozen-lockfile` before pushing. The animation dependencies and their transitive packages are recorded in `pnpm-lock.yaml` as well as `package-lock.json`.
+
 Preview screenshots and the HTTP report are saved in the ignored `artifacts/studio-redesign/` directory. This migration does not publish a production deployment.
