@@ -17,6 +17,7 @@ Existing home anchors, legacy redirects, admin routes, authentication, agent API
 
 - 437 captured media/font files live separately in `public/studio/`. `asset-provenance.json` records their source URLs. `scripts/prepare-studio-assets.py` prepares them from the clone manifest.
 - `lib/studio-assets.ts` supplies named local paths; local Lausanne fonts are loaded through Next's font loader.
+- The hero background uses the original generated Makezaa collage in `public/studio/makezaa/hero-background.webp`. Its brief and generation provenance are recorded in `docs/assets/makezaa-hero-background.md`; preparation scripts retain this replacement. The hero film has a separate poster reference, allowing the background to change independently.
 - The original chrome fragment shader runs through a native WebGL2 adapter, with a captured image fallback.
 - Motion, GSAP and Lenis implement the intro, letter reveals, text scrub, counter, parallax, sticky services and circular project/editorial showcases. The hero film keeps one video element while its viewport rectangle grows into the reel, preserving playback time. Circular showcases use vertical scene wipes, matching background/caption transitions and numbered rings. Native CSS handles menu, hover and FAQ transitions.
 - The original laptop film is placed in the separate “Let’s get started” CTA scene, using the captured desktop and phone variants. Footer lettering is clear of video layers; the existing meeting form remains below the CTA.

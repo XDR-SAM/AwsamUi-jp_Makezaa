@@ -95,7 +95,7 @@ export function StudioReel() {
             <div className="hero-reel-film" ref={film}>
               <AmbientVideo
                 src={studioAssets.heroFilm}
-                poster={studioAssets.heroBackground}
+                poster={studioAssets.heroFilmPoster}
               />
               <div className="reel-controls" inert={!interactive}>
                 <div className="reel-shade" />

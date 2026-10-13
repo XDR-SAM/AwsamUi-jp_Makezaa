@@ -20,7 +20,8 @@ def media(fragment,preferred=''):
     if not matches: raise ValueError(fragment)
     return matches[0][1]
 named={
- 'heroBackground':media('aPvkTvk','scale-down-to=2048'),
+ 'heroBackground':'/studio/makezaa/hero-background.webp',
+ 'heroFilmPoster':media('aPvkTvk','scale-down-to=2048'),
  'heroFilm':media('921N3eq','1080p'),
  'reel':media('NK902P1','480p'),
  'serviceWeb':media('BP0200Otu','1080p'),
@@ -34,5 +35,5 @@ named={
  'loaderImages':[media(f,'scale-down-to=1024') for f in ['j5qfcqTf','9kqEJRK','Pcgs4wY','PBmTjMm','pvrT8Ty','3heQiYts','lq0qhgT','wxi2R8j']],
  'loaderMobileImages':[media(f) for f in ['wmgcUTv','5qIWwG2','hFFMmA1','hMvDEVn','Suq6eTp','NkopGPi','IP1WI7z','BVDHmFl']],
 }
-(ROOT/'lib/studio-assets.ts').write_text('// Captured media, served by Next.js. The Framer app/router is not embedded.\nexport const studioAssets = '+json.dumps(named,indent=2)+' as const;\n',encoding='utf-8')
+(ROOT/'lib/studio-assets.ts').write_text('// Local media, served by Next.js. The Framer app/router is not embedded.\nexport const studioAssets = '+json.dumps(named,indent=2)+' as const;\n',encoding='utf-8')
 print('Copied',len(assets),'media assets; generated named references.')
