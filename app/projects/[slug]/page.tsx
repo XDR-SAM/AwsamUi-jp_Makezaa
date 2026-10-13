@@ -4,11 +4,13 @@ import { Navigation } from "@/components/landing/navigation";
 import { FooterSection } from "@/components/landing/footer-section";
 import { CmsContent } from "@/components/cms-content";
 import { StudioMotion, SplitText } from "@/components/studio/motion";
-import { StudioCta } from "@/components/studio/cta";
-import { studioAssets } from "@/lib/studio-assets";
+import { ProjectGallery } from "@/components/studio/project-gallery";
+import { RelatedProjects } from "@/components/studio/related-projects";
+import { projectGallery } from "@/lib/project-gallery";
 import { getProjectBySlug, getPublishedProjects } from "@/lib/projects";
 import { JsonLd } from "@/components/json-ld";
 import { projectMetadata, projectSchema, PRIVATE_ROBOTS } from "@/lib/seo";
+
 export const dynamic = "force-dynamic";
 export async function generateMetadata({
   params,
@@ -27,93 +29,65 @@ export default async function ProjectPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const project = await getProjectBySlug(slug);
+  const [project, all] = await Promise.all([
+    getProjectBySlug(slug),
+    getPublishedProjects(),
+  ]);
   if (!project) notFound();
-  const related = (await getPublishedProjects())
-    .filter((p) => p.id !== project.id)
-    .slice(0, 3);
+  const related = all
+    .filter((item) => item.id !== project.id)
+    .slice(0, 4)
+    .map((item) => ({
+      id: item.id,
+      title: item.title,
+      slug: item.slug,
+      cover_image: item.cover_image,
+      tech_stack: item.tech_stack,
+      featured: item.featured,
+      preview_image: projectGallery(item)[1]?.src,
+    }));
   return (
     <StudioMotion>
-      <main id="top">
+      <main className="project-case-study">
         <JsonLd data={projectSchema(project)} />
         <Navigation />
-        <section className="studio-detail-hero" data-nav-theme="dark">
-          <img
-            className="detail-cover"
-            src={project.cover_image || studioAssets.projectVisuals[0]}
-            alt={project.cover_image ? project.title : ""}
-            fetchPriority="high"
-          />
-          <div className="detail-actions">
-            {project.live_url ? (
-              <a
-                href={project.live_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="glass-pill"
-              >
-                View live ↗
-              </a>
-            ) : (
-              <Link href="/projects" className="glass-pill">
-                All projects ↗
-              </Link>
-            )}
-            {project.github_url ? (
-              <a
-                href={project.github_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="glass-pill"
-              >
-                Source code ↗
-              </a>
-            ) : null}
-            <a href="#project-info" className="glass-pill">
-              Project info ↓
-            </a>
-          </div>
-        </section>
+        <ProjectGallery
+          key={project.id}
+          title={project.title}
+          images={projectGallery(project)}
+          description={project.description}
+          tech={project.tech_stack || []}
+          liveUrl={project.live_url}
+          githubUrl={project.github_url}
+        />
         <article
           id="project-info"
-          className="detail-body"
+          className="project-story"
           data-nav-theme="light"
         >
-          <Link href="/projects" className="eyebrow">
-            ← Back to projects
-          </Link>
-          {project.featured ? (
-            <span className="eyebrow">Featured project</span>
-          ) : null}
-          <h1>
-            <SplitText text={project.title} />
-          </h1>
-          {project.description ? (
-            <p className="detail-description">{project.description}</p>
-          ) : null}
-          <div className="detail-tags">
-            {project.tech_stack?.map((tech) => (
-              <span key={tech}>{tech}</span>
-            ))}
-          </div>
-          {project.content ? <CmsContent html={project.content} /> : null}
-          {related.length ? (
-            <section className="studio-related">
-              <h2>More work from the studio.</h2>
-              {related.map((p) => (
-                <Link
-                  className="related-link"
-                  href={`/projects/${p.slug}`}
-                  key={p.id}
-                >
-                  <span>{p.title}</span>
-                  <span>↗</span>
-                </Link>
+          <aside className="project-story-label">
+            <p>Project details</p>
+            <Link href="/projects">← All projects</Link>
+            {project.featured ? <span>Featured project</span> : null}
+          </aside>
+          <div className="project-story-content">
+            <h1>
+              <SplitText text={project.title} />
+            </h1>
+            {project.description ? (
+              <p className="project-story-intro">
+                <SplitText text={project.description} scrub />
+              </p>
+            ) : null}
+            <div className="detail-tags">
+              {project.tech_stack?.map((tech) => (
+                <span key={tech}>{tech}</span>
               ))}
-            </section>
-          ) : null}
+            </div>
+            {project.content ? <CmsContent html={project.content} /> : null}
+          </div>
         </article>
-        <StudioCta meeting={false} />
+        <RelatedProjects key={project.id} projects={related} />
         <FooterSection />
       </main>
     </StudioMotion>

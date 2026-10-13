@@ -1,10 +1,11 @@
 import { Navigation } from "@/components/landing/navigation";
 import { FooterSection } from "@/components/landing/footer-section";
-import { StudioMotion, SplitText } from "@/components/studio/motion";
+import { StudioMotion } from "@/components/studio/motion";
 import { ProjectGrid } from "@/components/studio/projects";
 import { StudioCta } from "@/components/studio/cta";
 import { getPublishedProjects } from "@/lib/projects";
 import { pageMetadata, previewImage } from "@/lib/seo";
+import { projectGallery } from "@/lib/project-gallery";
 export const dynamic = "force-dynamic";
 export const metadata = pageMetadata(
   "Projects",
@@ -20,21 +21,20 @@ export default async function ProjectsPage() {
   ];
   return (
     <StudioMotion>
-      <main id="top" data-nav-theme="light">
+      <main id="top" className="project-index" data-nav-theme="light">
         <Navigation />
-        <header className="studio-page-header">
-          <span className="eyebrow">Selected work / Makezaa Studio</span>
-          <h1>
-            <SplitText text="Built to make" />
-            <br />
-            <SplitText text="a difference." />
-          </h1>
-          <p>
-            Real websites, applications, and digital systems. Thoughtfully
-            designed, carefully built, and ready for the world.
-          </p>
-        </header>
-        <ProjectGrid projects={projects} />
+        <h1 className="sr-only">Makezaa Projects</h1>
+        <ProjectGrid
+          projects={projects.map((project) => ({
+            id: project.id,
+            title: project.title,
+            slug: project.slug,
+            cover_image: project.cover_image,
+            tech_stack: project.tech_stack,
+            featured: project.featured,
+            preview_image: projectGallery(project)[1]?.src,
+          }))}
+        />
         <StudioCta meeting={false} />
         <FooterSection />
       </main>

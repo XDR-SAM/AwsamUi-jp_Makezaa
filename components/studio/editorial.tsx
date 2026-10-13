@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Post } from "@/lib/types";
 import { studioAssets } from "@/lib/studio-assets";
 import { SplitText } from "./motion";
+import { CircularShowcase } from "./circular-showcase";
 
 export function PostCards({ posts }: { posts: Post[] }) {
   return (
@@ -39,6 +40,22 @@ export function PostCards({ posts }: { posts: Post[] }) {
   );
 }
 export function StudioInsights({ posts }: { posts: Post[] }) {
+  if (posts.length)
+    return (
+      <CircularShowcase
+        id="blog"
+        title="Ideas worth sharing."
+        allHref="/blog"
+        allLabel="View all insights"
+        items={posts.map((post, index) => ({
+          id: post.id,
+          title: post.title,
+          href: `/blog/${post.slug}`,
+          image: post.cover_image || studioAssets.loaderImages[index % 8],
+          meta: `${new Date(post.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "Asia/Dhaka" })} / ${post.tags?.[0] || "Studio insight"}`,
+        }))}
+      />
+    );
   return (
     <section
       id="blog"

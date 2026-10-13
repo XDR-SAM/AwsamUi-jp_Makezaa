@@ -1,6 +1,5 @@
 "use client";
 import dynamic from "next/dynamic";
-import { AmbientVideo } from "./ambient-video";
 import { StudioClock } from "./clock";
 import { SplitText } from "./motion";
 import { studioAssets } from "@/lib/studio-assets";
@@ -37,11 +36,8 @@ export function StudioHero() {
             <SplitText text="Turning ideas" /> <SplitText text="into" />
           </span>
           <span className="hero-line hero-line-middle">
-            <span className="hero-mini-film">
-              <AmbientVideo
-                src={studioAssets.heroFilm}
-                poster={studioAssets.loaderImages[0]}
-              />
+            <span className="hero-mini-film" id="hero-film-anchor">
+              <img src={studioAssets.loaderImages[0]} alt="" />
             </span>
             <SplitText text="high — impact" />
           </span>

@@ -37,7 +37,9 @@ export function StudioMotion({
       if (initialTarget) {
         const flushTop =
           initialTarget.id.startsWith("service-") ||
-          ["features", "pricing"].includes(initialTarget.id);
+          initialTarget.id.startsWith("showcase-") ||
+          initialTarget.id.startsWith("project-image-") ||
+          ["features", "pricing", "showreel"].includes(initialTarget.id);
         scroller.scrollTo(initialTarget, {
           offset: flushTop ? 0 : -100,
           immediate: true,
@@ -104,35 +106,6 @@ export function StudioMotion({
             },
           });
         });
-        const hero = element.querySelector(".studio-hero");
-        if (hero)
-          gsap.to(".hero-main", {
-            y: -70,
-            opacity: 0,
-            ease: "none",
-            scrollTrigger: {
-              trigger: hero,
-              start: "top top",
-              end: "bottom 20%",
-              scrub: 0.6,
-            },
-          });
-        const reel = element.querySelector(".studio-reel");
-        if (reel)
-          gsap.fromTo(
-            ".reel-frame",
-            { clipPath: "inset(10% 8% round 40px)" },
-            {
-              clipPath: "inset(0% 0% round 0px)",
-              ease: "none",
-              scrollTrigger: {
-                trigger: reel,
-                start: "top bottom",
-                end: "top top",
-                scrub: true,
-              },
-            },
-          );
       }, element);
       const instance = scroller;
       const animationTick = tick;
@@ -155,17 +128,17 @@ export function StudioMotion({
       if (!link) return;
       const url = new URL(link.href, location.href);
       const id = url.hash.slice(1);
-      if (
-        url.origin !== location.origin ||
-        url.pathname !== pathname ||
-        !id
-      )
+      if (url.origin !== location.origin || url.pathname !== pathname || !id)
         return;
       const target = document.getElementById(id);
       if (!target) return;
       event.preventDefault();
       history.pushState(null, "", url);
-      const flushTop = id.startsWith("service-") || ["features", "pricing", "top"].includes(id);
+      const flushTop =
+        id.startsWith("service-") ||
+        id.startsWith("showcase-") ||
+        id.startsWith("project-image-") ||
+        ["features", "pricing", "top", "showreel"].includes(id);
       if (scroller) scroller.scrollTo(target, { offset: flushTop ? 0 : -100 });
       else target.scrollIntoView({ behavior: "auto", block: "start" });
     };

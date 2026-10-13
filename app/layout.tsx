@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SITE_ORIGIN, SITE_DESCRIPTION, previewImage } from "@/lib/seo";
 import "./globals.css";
 import "./studio.css";
+import { StudioRouteTransitions } from "@/components/studio/route-transitions";
 
 const lausanne = localFont({
   src: [
@@ -69,7 +70,7 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body className={`${lausanne.variable} font-sans antialiased`}>
-        {children}
+        <StudioRouteTransitions>{children}</StudioRouteTransitions>
         <Analytics />
       </body>
     </html>

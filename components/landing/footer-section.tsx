@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { StudioClock } from "@/components/studio/clock";
-import { AmbientVideo } from "@/components/studio/ambient-video";
-import { studioAssets } from "@/lib/studio-assets";
 import { siteEmail } from "@/lib/nav-links";
 export function FooterSection() {
   return (
@@ -35,7 +33,6 @@ export function FooterSection() {
         </div>
       </div>
       <div className="footer-brand">
-        <AmbientVideo src={studioAssets.footerFilm} />
         <span>MAKEZAA</span>
       </div>
       <div className="footer-bottom">
