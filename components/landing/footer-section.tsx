@@ -1,100 +1,49 @@
-"use client";
-
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { StudioClock } from "@/components/studio/clock";
+import { AmbientVideo } from "@/components/studio/ambient-video";
+import { studioAssets } from "@/lib/studio-assets";
 import { siteEmail } from "@/lib/nav-links";
-import { serviceCatalog } from "@/lib/service-catalog";
-
-const footerLinks = {
-  Services: serviceCatalog.map(({ name }) => ({ name, href: "/#features" })),
-  Company: [
-    { name: "About", href: "/#about" },
-    { name: "Projects", href: "/projects" },
-    { name: "Blog", href: "/blog" },
-    { name: "Contact", href: "/contact" },
-  ],
-  Resources: [
-    { name: "Process", href: "/#how-it-works" },
-    { name: "Pricing", href: "/#pricing" },
-    { name: "Tools", href: "/#integrations" },
-    { name: "Book a meeting", href: "/#book-meeting" },
-  ],
-  Legal: [
-    { name: "Privacy", href: "/contact" },
-    { name: "Terms", href: "/contact" },
-  ],
-};
-
-const socialLinks = [
-  { name: "Twitter", href: "https://twitter.com" },
-  { name: "GitHub", href: "https://github.com" },
-  { name: "LinkedIn", href: "https://linkedin.com" },
-  { name: "Instagram", href: "https://instagram.com" },
-];
-
 export function FooterSection() {
   return (
-    <footer id="contact" className="relative bg-black scroll-mt-28">
-      <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12">
-        <div className="py-16 lg:py-20">
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-12 lg:gap-8">
-            <div className="col-span-2">
-              <Link href="/" className="inline-flex items-center gap-2 mb-6">
-                <span className="text-2xl font-display text-white">Makezaa</span>
-                <span className="text-xs text-white/40 font-mono">Labs</span>
-              </Link>
-
-              <p className="text-white/50 leading-relaxed mb-8 max-w-xs text-sm">
-                Web development, apps, and digital strategy for growing businesses.
-              </p>
-
-              <div className="flex flex-wrap gap-4">
-                {socialLinks.map((link) => (
-                  <a
-                    key={link.name}
-                    href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-white/40 hover:text-white transition-colors flex items-center gap-1 group"
-                  >
-                    {link.name}
-                    <ArrowUpRight className="w-3 h-3 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            {Object.entries(footerLinks).map(([title, links]) => (
-              <div key={title}>
-                <h3 className="text-sm font-medium text-white mb-6">{title}</h3>
-                <ul className="space-y-4">
-                  {links.map((link) => (
-                    <li key={link.name}>
-                      <Link
-                        href={link.href}
-                        className="text-sm text-white/40 hover:text-white transition-colors"
-                      >
-                        {link.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
+    <footer className="studio-footer" id="contact" data-nav-theme="dark">
+      <div className="footer-meta">
+        <div>
+          <p>Designed & built by Makezaa Studio</p>
+          <p>Websites. Systems. Digital experiences.</p>
+          <a href={`mailto:${siteEmail}`}>{siteEmail}</a>
         </div>
-
-        <div className="py-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-white/30">
-            &copy; 2026 Makezaa. All rights reserved.
-          </p>
-
-          <div className="flex items-center gap-4 text-sm text-white/30">
-            <a href={`mailto:${siteEmail}`} className="hover:text-white transition-colors">
-              {siteEmail}
-            </a>
-          </div>
+        <div>
+          <p className="footer-label">Index</p>
+          <Link href="/">Home</Link>
+          <Link href="/projects">Projects</Link>
+          <Link href="/blog">Insights</Link>
+          <Link href="/contact">Contact</Link>
         </div>
+        <div>
+          <p className="footer-label">Explore</p>
+          <Link href="/#features">Services</Link>
+          <Link href="/#how-it-works">Our process</Link>
+          <Link href="/#pricing">Pricing</Link>
+          <Link href="/#book-meeting">Book a meeting</Link>
+        </div>
+        <div>
+          <p className="footer-label">Socials</p>
+          <a href="https://github.com/XDR-SAM" target="_blank" rel="noreferrer">
+            GitHub ↗
+          </a>
+          <a href={`mailto:${siteEmail}`}>Email ↗</a>
+        </div>
+      </div>
+      <div className="footer-brand">
+        <AmbientVideo src={studioAssets.footerFilm} />
+        <span>MAKEZAA</span>
+      </div>
+      <div className="footer-bottom">
+        <StudioClock />
+        <span>© {new Date().getFullYear()} Makezaa Studio</span>
+        <a href="#top" className="rolling-link">
+          <span data-text="Back to top ↑">Back to top ↑</span>
+        </a>
       </div>
     </footer>
   );
