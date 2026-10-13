@@ -1,0 +1,5 @@
+# Local preview process output
+server.*.log
+*.pid
+__pycache__/
+node_modules/

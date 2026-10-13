@@ -1,0 +1,26 @@
+{
+  "source": "https://madebykota.com/",
+  "capturedAt": "2026-10-13T12:15:22Z",
+  "pages": [
+    "https://madebykota.com/",
+    "https://madebykota.com/products",
+    "https://madebykota.com/docs",
+    "https://madebykota.com/products/orionix",
+    "https://madebykota.com/products/fizens",
+    "https://madebykota.com/products/intelly",
+    "https://madebykota.com/products/aurea",
+    "https://madebykota.com/products/james-nolan",
+    "https://madebykota.com/products/candreva",
+    "https://madebykota.com/products/brandon-paul",
+    "https://madebykota.com/products/kokoro",
+    "https://madebykota.com/products/griddie"
+  ],
+  "assets": 477,
+  "assetBytes": 215678074,
+  "failures": {
+    "https://stream.mux.com/szFJgmya3Ur41pNDlzzzJ1IyAnynkdmprHdjHJyE100A/480p.mp4": "HTTP Error 404: Not Found"
+  },
+  "packaging": "HTML pages with separate assets; no base64 media embedding",
+  "extractedStylesheets": 15,
+  "extractedScripts": 17
+}

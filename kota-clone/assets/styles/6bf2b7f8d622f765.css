@@ -1,0 +1,28 @@
+
+        @keyframes shimmer-R3claaelp {
+            0%, 0% {
+                background-position: 200%;
+            }
+            100% {
+                background-position: -100%;
+            }
+        }
+        .text-shimmer-R3claaelp {
+            background: linear-gradient(
+                120deg,
+                transparent 0%,
+                transparent 30.5%,
+                var(--token-20608b9f-0145-4a1e-b971-ee948ebbb015, rgb(255, 255, 255)) 50%,
+                transparent 69.5%,
+                transparent 100%
+            );
+            -webkit-background-size: 200% 200%;
+            -moz-background-size: 200% 200%;
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -moz-background-clip: text;
+            background-clip: text;
+            background-repeat: no-repeat;
+            animation: shimmer-R3claaelp 3s linear infinite;
+        }
+    

@@ -1,0 +1,9 @@
+{
+  "name": "kota-local-archive",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "start": "python serve.py",
+    "capture": "python mirror.py && python finalize.py"
+  }
+}
