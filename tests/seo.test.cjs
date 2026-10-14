@@ -106,3 +106,12 @@ test('crawler policy exposes rendering assets and lets Google read admin noindex
   assert.equal(result.rules.some(rule => rule.userAgent === 'OAI-SearchBot'), true);
   assert.equal(seo.PRIVATE_ROBOTS.index, false);
 });
+
+test('collection schema links exactly the visible published cards with safe canonical URLs', () => {
+  const schema = seo.collectionSchema('projects', [{ slug: 'one', title: 'One' }, { slug: 'two', title: '<b>Two</b>' }]);
+  const page = schema['@graph'].find(item => item['@type'] === 'CollectionPage');
+  assert.equal(page.mainEntity.numberOfItems, 2);
+  assert.equal(page.mainEntity.itemListElement[1].name, 'Two');
+  assert.equal(page.mainEntity.itemListElement[0].url, 'https://www.makezaa.com/projects/one');
+  assert.equal(page.mainEntity.aggregateRating, undefined);
+});

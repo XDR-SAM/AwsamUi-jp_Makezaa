@@ -18,7 +18,7 @@ import { getRecentProjects } from "@/lib/projects";
 import { JsonLd } from "@/components/json-ld";
 import { pageMetadata, siteSchema, SITE_DESCRIPTION } from "@/lib/seo";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 export const metadata = {
   ...pageMetadata("Web Development & Digital Solutions", SITE_DESCRIPTION, "/"),
   title: { absolute: "Makezaa | Web Development & Digital Solutions" },
@@ -43,7 +43,7 @@ export default async function Home() {
         <StudioProcess />
         <StudioStandards />
         <StudioTestimonials />
-        <StudioProjects projects={projects} />
+        <StudioProjects projects={projects.map(({ id, title, slug, cover_image, tech_stack, featured }) => ({ id, title, slug, cover_image, tech_stack, featured }))} />
         <StudioInsights posts={posts} />
         <StudioFaq />
         <StudioCta />

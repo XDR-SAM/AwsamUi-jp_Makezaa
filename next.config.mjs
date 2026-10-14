@@ -12,6 +12,7 @@ const nextConfig = {
       { source: '/about', destination: '/#about', permanent: true },
       { source: '/services', destination: '/#features', permanent: true },
       { source: '/book-meeting', destination: '/#book-meeting', permanent: true },
+      { source: '/projects/nike-air-max-shoe-web-design', destination: '/projects/nike-air-max-showcase', permanent: true },
     ];
   },
   async headers() {

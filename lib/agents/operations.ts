@@ -1,4 +1,5 @@
 import 'server-only';
+import { invalidatePublicContent } from '@/lib/public-content-cache';
 import { z } from 'zod';
 import { createAdminClient } from '@/utils/supabase/admin';
 import { need, type AgentPrincipal } from './auth';
@@ -98,11 +99,8 @@ async function mutate(
   );
   dbError(error);
   if (operation.startsWith('post_') || operation.startsWith('project_')) {
-    const { revalidatePath } = await import('next/cache');
     const path = operation.startsWith('post_') ? '/blog' : '/projects';
-    revalidatePath(path);
-    if (result.slug) revalidatePath(`${path}/${result.slug}`);
-    revalidatePath('/');
+    invalidatePublicContent(operation.startsWith('post_') ? 'posts' : 'projects');
     return {
       ...result,
       ...(result.slug

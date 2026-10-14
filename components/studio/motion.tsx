@@ -57,7 +57,7 @@ export function StudioMotion({
             duration: 1.1,
             stagger: letters.length ? 0.018 : 0,
             ease: "power3.out",
-            delay: heroItem ? 3.25 : 0,
+            delay: heroItem && document.documentElement.dataset.studioNavigation !== "client" ? 3.25 : 0,
             scrollTrigger: heroItem
               ? undefined
               : { trigger: item, start: "top 92%", once: true },
@@ -180,10 +180,10 @@ export function SplitText({
   return (
     <span
       className={`split-text ${className}`}
-      aria-label={text}
       data-reveal={scrub ? undefined : ""}
       data-scrub-text={scrub ? "" : undefined}
     >
+      <span className="sr-only">{text}</span>
       {words.map((word, index) => (
         <span
           className="reveal-word"

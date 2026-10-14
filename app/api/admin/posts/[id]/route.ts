@@ -1,3 +1,4 @@
+import { invalidatePublicContent } from "@/lib/public-content-cache";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -19,6 +20,7 @@ export async function PUT(
       .select()
       .single();
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    invalidatePublicContent('posts');
     return NextResponse.json(data);
   } catch {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -35,6 +37,7 @@ export async function DELETE(
     const supabase = createAdminClient();
     const { error } = await supabase.from("posts").delete().eq("id", id);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    invalidatePublicContent('posts');
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

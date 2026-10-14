@@ -11,7 +11,10 @@ import { getProjectBySlug, getPublishedProjects } from "@/lib/projects";
 import { JsonLd } from "@/components/json-ld";
 import { projectMetadata, projectSchema, PRIVATE_ROBOTS } from "@/lib/seo";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
+export async function generateStaticParams() {
+  return (await getPublishedProjects()).map(item => ({ slug: item.slug }));
+}
 export async function generateMetadata({
   params,
 }: {

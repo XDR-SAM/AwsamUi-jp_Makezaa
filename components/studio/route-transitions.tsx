@@ -11,7 +11,8 @@ export function StudioRouteTransitions({ children }: { children: ReactNode }) {
     const pending = arriving.current;
     if (pending?.path === pathname) {
       arriving.current = null;
-      requestAnimationFrame(() => pending.resolve());
+      // Painting is suppressed until the update promise resolves; do not wait for a frame.
+      pending.resolve();
     }
   }, [pathname]);
   useEffect(() => {
@@ -34,11 +35,14 @@ export function StudioRouteTransitions({ children }: { children: ReactNode }) {
         url.origin !== location.origin ||
         url.pathname === pathname ||
         pathname.startsWith("/admin") ||
-        !(
+        url.pathname.startsWith("/admin")
+      )
+        return;
+      document.documentElement.dataset.studioNavigation = "client";
+      if (!(
           url.pathname.startsWith("/projects") ||
           pathname.startsWith("/projects")
-        )
-      )
+        ))
         return;
       if (
         !document.startViewTransition ||
@@ -62,13 +66,15 @@ export function StudioRouteTransitions({ children }: { children: ReactNode }) {
       const transition = document.startViewTransition(
         () =>
           new Promise<void>((resolve) => {
-            const timeout = window.setTimeout(resolve, 6000);
+            const finish = () => {
+              clearTimeout(timeout);
+              arriving.current = null;
+              resolve();
+            };
+            const timeout = window.setTimeout(finish, 6000);
             arriving.current = {
               path: url.pathname,
-              resolve: () => {
-                clearTimeout(timeout);
-                resolve();
-              },
+              resolve: finish,
             };
             router.push(url.pathname + url.search + url.hash);
           }),
@@ -88,5 +94,6 @@ export function StudioRouteTransitions({ children }: { children: ReactNode }) {
     document.addEventListener("click", navigate, true);
     return () => document.removeEventListener("click", navigate, true);
   }, [pathname, router]);
+  useEffect(() => () => arriving.current?.resolve(), []);
   return children;
 }

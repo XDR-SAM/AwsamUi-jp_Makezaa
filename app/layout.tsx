@@ -70,6 +70,7 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body className={`${lausanne.variable} font-sans antialiased`}>
+        <noscript><style>{`.studio-loader { display: none !important; }`}</style></noscript>
         <StudioRouteTransitions>{children}</StudioRouteTransitions>
         <Analytics />
       </body>

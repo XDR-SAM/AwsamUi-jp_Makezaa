@@ -41,7 +41,7 @@ export function ProjectVisual({
   );
 }
 
-export function StudioProjects({ projects }: { projects: Project[] }) {
+export function StudioProjects({ projects }: { projects: ProjectPreview[] }) {
   if (!projects.length)
     return (
       <section id="projects" className="studio-section studio-empty">

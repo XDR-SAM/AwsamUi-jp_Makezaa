@@ -386,6 +386,7 @@ test('cross-origin admin mutation requests are rejected', () => {
 });
 function operationFixture(published = false) {
   const calls = [];
+  const invalidated = [];
   const db = {
     from: () => ({
       select: () => ({
@@ -404,6 +405,7 @@ function operationFixture(published = false) {
   };
   const auth = authFixture(active);
   const ops = load('lib/agents/operations.ts', {
+    '@/lib/public-content-cache': { invalidatePublicContent: kind => invalidated.push(kind) },
     'server-only': {},
     zod: require('zod'),
     '@/utils/supabase/admin': { createAdminClient: () => db },
@@ -413,7 +415,7 @@ function operationFixture(published = false) {
     './validation': validation,
     'next/cache': { revalidatePath: () => {} },
   });
-  return { calls, ...ops };
+  return { calls, invalidated, ...ops };
 }
 test('draft-only key cannot publish directly or edit an already published article', async () => {
   const p = { id: 'key-id', scopes: ['posts:write'] },
@@ -459,6 +461,7 @@ test('content writes use a deterministic receipt and require a lease for associa
   await f.runOperation('post_save', p, a);
   assert.equal(f.calls[0].params.p_hash, f.calls[1].params.p_hash);
   assert.equal(f.calls[0].params.p_key, a.idempotency_key);
+  assert.equal(f.invalidated.join(','), 'posts,posts');
   await assert.rejects(
     f.runOperation('post_save', p, {
       ...a,

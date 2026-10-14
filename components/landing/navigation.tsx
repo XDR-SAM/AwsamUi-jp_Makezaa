@@ -58,7 +58,7 @@ export function Navigation() {
   return (
     <header className={`studio-navigation ${light ? "nav-light" : "nav-dark"}`}>
       <Link
-        href="/"
+        href="/" prefetch={true}
         className="glass-pill studio-wordmark"
         aria-label="Makezaa home"
         onClick={() => setOpen(false)}
@@ -84,13 +84,13 @@ export function Navigation() {
           inert={!open}
         >
           <nav aria-label="Main navigation">
-            <Link href="/" onClick={() => setOpen(false)}>
+            <Link href="/" prefetch={true} onClick={() => setOpen(false)}>
               Home
             </Link>
-            <Link href="/projects" onClick={() => setOpen(false)}>
+            <Link href="/projects" prefetch={true} onClick={() => setOpen(false)}>
               Projects
             </Link>
-            <Link href="/blog" onClick={() => setOpen(false)}>
+            <Link href="/blog" prefetch={true} onClick={() => setOpen(false)}>
               Insights
             </Link>
             <div className="menu-sections">

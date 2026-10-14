@@ -60,7 +60,7 @@ robots = session.get(base + '/robots.txt', timeout=30).text
 assert 'Disallow: /_next/' not in robots
 assert 'Sitemap: https://www.makezaa.com/sitemap.xml' in robots
 assert 'OAI-SearchBot' in robots
-for path, target in [('/about', '/#about'), ('/services', '/#features'), ('/book-meeting', '/#book-meeting')]:
+for path, target in [('/about', '/#about'), ('/services', '/#features'), ('/book-meeting', '/#book-meeting'), ('/projects/nike-air-max-shoe-web-design', '/projects/nike-air-max-showcase')]:
     page = session.get(base + path, timeout=30, allow_redirects=False)
     assert page.status_code in (301, 308), (path, page.status_code)
     assert page.headers['Location'].endswith(target), (path, page.headers.get('Location'))

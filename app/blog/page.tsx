@@ -4,8 +4,9 @@ import { StudioMotion, SplitText } from "@/components/studio/motion";
 import { PostCards } from "@/components/studio/editorial";
 import { StudioCta } from "@/components/studio/cta";
 import { getPublishedPosts } from "@/lib/blog";
-import { pageMetadata, previewImage } from "@/lib/seo";
-export const dynamic = "force-dynamic";
+import { pageMetadata, previewImage, collectionSchema } from "@/lib/seo";
+import { JsonLd } from "@/components/json-ld";
+export const revalidate = 300;
 export const metadata = pageMetadata(
   "Blog",
   "Updates, tutorials, and insights on web development, AI, and digital strategy from the Makezaa team.",
@@ -17,6 +18,7 @@ export default async function BlogPage() {
   return (
     <StudioMotion>
       <main id="top" data-nav-theme="light">
+        <JsonLd data={collectionSchema('blog', posts)} />
         <Navigation />
         <header className="studio-page-header">
           <span className="eyebrow">Insights / From Makezaa Studio</span>

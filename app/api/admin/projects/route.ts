@@ -1,3 +1,4 @@
+import { invalidatePublicContent } from "@/lib/public-content-cache";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -29,6 +30,7 @@ export async function POST(request: NextRequest) {
       .select()
       .single();
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    invalidatePublicContent('projects');
     return NextResponse.json(data, { status: 201 });
   } catch {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

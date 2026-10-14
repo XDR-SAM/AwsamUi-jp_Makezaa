@@ -90,6 +90,20 @@ export function breadcrumbSchema(items: { name: string; path: string }[]) {
   })) };
 }
 
+/** Describe the published cards visible on a collection; no product ratings or invented claims. */
+export function collectionSchema(kind: 'blog' | 'projects', items: { slug: string; title: string }[]) {
+  const path = `/${kind}`;
+  const url = absoluteUrl(path);
+  return { '@context': 'https://schema.org', '@graph': [organization, {
+    '@type': 'CollectionPage', '@id': `${url}#collection`, url,
+    name: kind === 'projects' ? 'Makezaa Projects' : 'Makezaa Insights',
+    isPartOf: { '@id': absoluteUrl('/#website') },
+    mainEntity: { '@type': 'ItemList', numberOfItems: items.length, itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem', position: index + 1, name: plainText(item.title), url: absoluteUrl(contentPath(kind, item.slug)),
+    })) },
+  }, breadcrumbSchema([{ name: 'Home', path: '/' }, { name: kind === 'projects' ? 'Projects' : 'Insights', path }])] };
+}
+
 export function postSchema(post: Post) {
   const url = absoluteUrl(contentPath('blog', post.slug));
   return { '@context': 'https://schema.org', '@graph': [organization, {

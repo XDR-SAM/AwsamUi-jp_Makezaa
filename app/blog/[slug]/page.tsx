@@ -7,7 +7,10 @@ import { StudioMotion, SplitText } from "@/components/studio/motion";
 import { getPostBySlug, getPublishedPosts } from "@/lib/blog";
 import { JsonLd } from "@/components/json-ld";
 import { postMetadata, postSchema, PRIVATE_ROBOTS } from "@/lib/seo";
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
+export async function generateStaticParams() {
+  return (await getPublishedPosts()).map(item => ({ slug: item.slug }));
+}
 export async function generateMetadata({
   params,
 }: {

@@ -4,9 +4,10 @@ import { StudioMotion } from "@/components/studio/motion";
 import { ProjectGrid } from "@/components/studio/projects";
 import { StudioCta } from "@/components/studio/cta";
 import { getPublishedProjects } from "@/lib/projects";
-import { pageMetadata, previewImage } from "@/lib/seo";
+import { pageMetadata, previewImage, collectionSchema } from "@/lib/seo";
+import { JsonLd } from "@/components/json-ld";
 import { projectGallery } from "@/lib/project-gallery";
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 export const metadata = pageMetadata(
   "Projects",
   "Selected work — websites, apps, and digital products built by Makezaa.",
@@ -22,6 +23,7 @@ export default async function ProjectsPage() {
   return (
     <StudioMotion>
       <main id="top" className="project-index" data-nav-theme="light">
+        <JsonLd data={collectionSchema('projects', projects)} />
         <Navigation />
         <h1 className="sr-only">Makezaa Projects</h1>
         <ProjectGrid

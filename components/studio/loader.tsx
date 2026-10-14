@@ -13,7 +13,7 @@ export function StudioLoader() {
   useLayoutEffect(() => {
     const element = root.current;
     if (!element) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (document.documentElement.dataset.studioNavigation === "client" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       element.classList.add("is-loaded");
       return;
     }
