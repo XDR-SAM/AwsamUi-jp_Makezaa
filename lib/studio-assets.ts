@@ -4,6 +4,10 @@ export const studioAssets = {
   heroFilmPoster: "/studio/makezaa/hero-video-poster.webp",
   heroFilm: "/studio/makezaa/hero-preview.mp4",
   reel: "/studio/makezaa/studio-reel.mp4",
+  serviceWordpressFilm: "/studio/makezaa/service-wordpress-preview.mp4",
+  serviceWordpressPoster: "/studio/makezaa/service-wordpress-poster.webp",
+  serviceShopifyFilm: "/studio/makezaa/service-shopify-preview.mp4",
+  serviceShopifyPoster: "/studio/makezaa/service-shopify-poster.webp",
   serviceWeb:
     "/studio/stream.mux.com/BP0200Otu1K9wAS3EYw00ewY7oNNy4gBzZiQqh758BrbsQ/1080p.mp4",
   serviceCommerce:

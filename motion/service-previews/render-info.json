@@ -1,0 +1,20 @@
+{
+  "wordpress": {
+    "file": "service-wordpress-preview.mp4",
+    "width": 1080,
+    "height": 1350,
+    "frames": 336,
+    "fps": 30.14967158393453,
+    "duration": 11.144400000000001,
+    "bytes": 4713112
+  },
+  "shopify": {
+    "file": "service-shopify-preview.mp4",
+    "width": 1080,
+    "height": 1350,
+    "frames": 480,
+    "fps": 30.104613532023784,
+    "duration": 15.9444,
+    "bytes": 6906857
+  }
+}

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Makezaa service preview review</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #101010; color: white; font: 14px system-ui; }
+  main { display: flex; justify-content: center; gap: 24px; padding: 24px; }
+  figure { margin: 0; width: min(40vw, 540px); }
+  video { display: block; width: 100%; aspect-ratio: 4 / 5; background: black; }
+  figcaption { padding: 12px 0; }
+  header { padding: 20px 24px 0; }
+  button, select, input { font: inherit; }
+  input { width: min(60vw, 640px); }
+  .render header, .render .reference, .render figcaption { display: none; }
+  .render main { padding: 0; display: block; }
+  .render figure { width: 1080px; }
+</style>
+<header>
+  <label>Film <select id="mode"><option value="wordpress">WordPress</option><option value="shopify">Shopify</option></select></label>
+  <button id="play">Play / pause</button>
+  <label>Time <input id="time" type="range" min="0" max="11.1444" step="0.033"><output id="readout">0.00 s</output></label>
+</header>
+<main>
+  <figure><video id="film" muted playsinline loop controls></video><figcaption>Makezaa portfolio replacement</figcaption></figure>
+  <figure class="reference"><video id="reference" muted playsinline loop controls></video><figcaption>Captured motion reference</figcaption></figure>
+</main>
+<script>
+  const params = new URLSearchParams(location.search);
+  if (params.has('render')) document.body.classList.add('render');
+  const root = location.protocol === 'file:' ? '../../public' : '';
+  const film = document.querySelector('#film');
+  const reference = document.querySelector('#reference');
+  const mode = document.querySelector('#mode');
+  const time = document.querySelector('#time');
+  const sources = {wordpress:'BP0200Otu1K9wAS3EYw00ewY7oNNy4gBzZiQqh758BrbsQ',shopify:'SJ2mU2IfrQe3jkt22bmriMiit7Xl00El9gNpFXisIZ2w'};
+  function select() {
+    const key = mode.value;
+    window.VIDEO = {w:1080,h:1350,duration:key==='wordpress'?11.1444:15.9444};
+    time.max = VIDEO.duration;
+    film.src = `${root}/studio/makezaa/service-${key}-preview.mp4`;
+    reference.src = `${root}/studio/stream.mux.com/${sources[key]}/1080p.mp4`;
+    film.controls = !params.has('render');
+  }
+  window.seek = t => {
+    const value = Math.max(0, Math.min(VIDEO.duration - .001, t));
+    for (const video of [film,reference]) { video.pause(); video.currentTime = value; }
+    time.value = value;
+    document.querySelector('#readout').textContent = `${value.toFixed(2)} s`;
+  };
+  document.querySelector('#play').onclick = () => {
+    const shouldPlay = film.paused;
+    for (const video of [film,reference]) { if (shouldPlay) video.play(); else video.pause(); }
+  };
+  time.oninput = () => seek(Number(time.value));
+  mode.onchange = select;
+  if (params.get('mode') in sources) mode.value = params.get('mode');
+  select();
+</script>
+</html>

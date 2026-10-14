@@ -12,15 +12,20 @@ import { studioAssets } from "@/lib/studio-assets";
 import { AmbientVideo } from "./ambient-video";
 import { SplitText } from "./motion";
 const films = [
-  studioAssets.serviceWeb,
+  studioAssets.serviceWordpressFilm,
   studioAssets.processFilm,
-  studioAssets.serviceCommerce,
+  studioAssets.serviceShopifyFilm,
   studioAssets.serviceMotion,
   studioAssets.serviceCommerce,
   studioAssets.processFilm,
   studioAssets.serviceMotion,
   studioAssets.serviceWeb,
 ];
+const posters: Record<string, string> = {
+  [studioAssets.serviceWordpressFilm]: studioAssets.serviceWordpressPoster,
+  [studioAssets.serviceShopifyFilm]: studioAssets.serviceShopifyPoster,
+  [studioAssets.processFilm]: studioAssets.processFilmPoster,
+};
 
 export function StudioServices() {
   const root = useRef<HTMLElement>(null);
@@ -99,9 +104,7 @@ export function StudioServices() {
               <AmbientVideo
                 src={films[index]}
                 enabled={index === active}
-                poster={films[index] === studioAssets.processFilm
-                  ? studioAssets.processFilmPoster
-                  : studioAssets.projectVisuals[index % 5]}
+                poster={posters[films[index]] ?? studioAssets.projectVisuals[index % 5]}
               />
               <nav aria-label="Choose a service" className="service-index">
                 {serviceCatalog.map((item, i) => (
