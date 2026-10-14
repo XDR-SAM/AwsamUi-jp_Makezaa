@@ -32,7 +32,7 @@ export function StudioProcess() {
         <div className="process-film">
           <AmbientVideo
             src={studioAssets.processFilm}
-            poster={studioAssets.projectVisuals[2]}
+            poster={studioAssets.processFilmPoster}
           />
         </div>
       </div>

@@ -99,7 +99,9 @@ export function StudioServices() {
               <AmbientVideo
                 src={films[index]}
                 enabled={index === active}
-                poster={studioAssets.projectVisuals[index % 5]}
+                poster={films[index] === studioAssets.processFilm
+                  ? studioAssets.processFilmPoster
+                  : studioAssets.projectVisuals[index % 5]}
               />
               <nav aria-label="Choose a service" className="service-index">
                 {serviceCatalog.map((item, i) => (

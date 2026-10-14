@@ -1,0 +1,30 @@
+{
+  "desktop": {
+    "file": "laptop-preview-desktop.mp4",
+    "width": 1740,
+    "height": 1080,
+    "fps": 30.072625277662738,
+    "frames": 449,
+    "duration": 14.930522222597805,
+    "screen": [
+      501,
+      147,
+      738,
+      491
+    ]
+  },
+  "mobile": {
+    "file": "laptop-preview-mobile.mp4",
+    "width": 394,
+    "height": 854,
+    "fps": 30.072625277662738,
+    "frames": 449,
+    "duration": 14.930522222597805,
+    "screen": [
+      49,
+      142,
+      499,
+      332
+    ]
+  }
+}

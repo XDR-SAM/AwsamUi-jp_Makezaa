@@ -10,10 +10,10 @@ export const studioAssets = {
     "/studio/stream.mux.com/SJ2mU2IfrQe3jkt22bmriMiit7Xl00El9gNpFXisIZ2w/1080p.mp4",
   serviceMotion:
     "/studio/stream.mux.com/jeHaeZGXsR4q11ul6jRFPgLtAPhO53B5epZj39cw7jw/1080p.mp4",
-  processFilm:
-    "/studio/stream.mux.com/kvyETSxTWR4yWLgS7zJjL7W1my00PprfrISoZPY1rurM/1080p.mp4",
-  footerFilm:
-    "/studio/stream.mux.com/YNpICY1QivEoEq1iioX6vJBCsjNEqt3jpRnJAh00TuHI/480p.mp4",
+  processFilm: "/studio/makezaa/laptop-preview-desktop.mp4",
+  processFilmPoster: "/studio/makezaa/laptop-poster-desktop.webp",
+  footerFilm: "/studio/makezaa/laptop-preview-mobile.mp4",
+  footerFilmPoster: "/studio/makezaa/laptop-poster-mobile.webp",
   chromeMask:
     "/studio/framerusercontent.com/images/7XHsXmlUUmdQM95fkSvi3LRCuSk__24ca560a05da.svg",
   chromeFallback:

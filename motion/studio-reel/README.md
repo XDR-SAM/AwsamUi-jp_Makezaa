@@ -12,6 +12,14 @@ This is a motion-preserving retexture of the captured reference, rather than a n
 
 Both videos are H.264/yuv420p with fast-start metadata. The references contain no audio; these exports also remain silent. The website retains its existing ambient loop, one-element hero-to-reel morph, accessible modal controls and reduced-motion handling. The displayed reel duration is corrected to 24 seconds.
 
+## Laptop previews
+
+`render-laptop.py` places all 449 approved hero-preview frames, at their original speed, inside the original laptop display. The laptop, hands and backdrop are taken from the existing scene's first frame; the original template playback is completely covered inside the display. The complete 16:9 preview is contained within the display with black letterboxing. The mobile export preserves the existing portrait composition and its partially cropped laptop.
+
+The exports are `laptop-preview-desktop.mp4` (1740 × 1080) and `laptop-preview-mobile.mp4` (394 × 854), each 14.9305 seconds, with matching `laptop-poster-*.webp` images. Shared media references update Custom Web Development, Business Management & ERP, How we work and the CTA above the footer, including CTA instances on other routes. Playback visibility and reduced-motion handling remain in `AmbientVideo`.
+
+Rebuild with `python motion/studio-reel/render-laptop.py` after generating the hero preview. `laptop-render-info.json` records the display bounds and output metadata.
+
 ## Motion source and retained visuals
 
 - Intro perspective is measured frame by frame with SIFT/RANSAC homographies, recorded in `intro-tracks.json`. Short tracking gaps of up to 10 frames are interpolated. An-Noor, Golden Touch and Eagle replace the three foreground project planes. Reference strips still appear behind those planes.

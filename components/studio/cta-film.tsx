@@ -15,6 +15,7 @@ export function CtaFilm() {
   return (
     <AmbientVideo
       src={phone ? studioAssets.footerFilm : studioAssets.processFilm}
+      poster={phone ? studioAssets.footerFilmPoster : studioAssets.processFilmPoster}
     />
   );
 }
