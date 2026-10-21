@@ -1,9 +1,8 @@
 # Dokploy deployment
 
-Deploy `XDR-SAM/AwsamUi-jp_Makezaa`, build path `/`.
-The initial migration uses branch `codex/dokploy-deployment` (PR #15).
-After merging the Docker changes, switch the Dokploy source branch to `main`
-to deploy future main-branch changes.
+Deploy `XDR-SAM/AwsamUi-jp_Makezaa`, branch `main`, build path `/`.
+The migration was initially verified on `codex/dokploy-deployment` (PR #15).
+Dokploy automatically deploys subsequent pushes to the configured source branch.
 Select Dockerfile with path `Dockerfile`, context `.`, and target `runner`.
 The standalone Next.js server listens on `0.0.0.0:3000` as a non-root user.
 Route domains to container port `3000`; `/api/health` is the health endpoint.
