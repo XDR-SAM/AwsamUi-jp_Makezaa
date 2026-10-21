@@ -8,6 +8,7 @@ COPY package.json package-lock.json ./
 RUN npm ci --legacy-peer-deps
 
 FROM base AS builder
+ENV DOCKER_BUILD=1
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
 

@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  // Docker needs standalone output; Vercel uses its standard Next.js build.
+  output: process.env.DOCKER_BUILD === '1' ? 'standalone' : undefined,
   typescript: {
     ignoreBuildErrors: true,
   },
