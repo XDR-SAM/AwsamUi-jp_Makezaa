@@ -1,10 +1,15 @@
 # Dokploy deployment
 
+Production is hosted on Vercel. The Dokploy migration was reversed; this guide
+is retained only for future optional Docker deployments.
+
 Deploy `XDR-SAM/AwsamUi-jp_Makezaa`, branch `main`, build path `/`.
 The migration was initially verified on `codex/dokploy-deployment` (PR #15).
 Dokploy automatically deploys subsequent pushes to the configured source branch.
 Select Dockerfile with path `Dockerfile`, context `.`, and target `runner`.
 The standalone Next.js server listens on `0.0.0.0:3000` as a non-root user.
+The Docker build sets `DOCKER_BUILD=1` to enable standalone output; regular
+Vercel builds use the default Next.js output.
 Route domains to container port `3000`; `/api/health` is the health endpoint.
 
 ## Environment
