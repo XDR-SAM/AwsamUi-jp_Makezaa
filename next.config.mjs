@@ -11,6 +11,9 @@ const nextConfig = {
   async redirects() {
     // Retire the old standalone URLs in favor of their existing home sections.
     return [
+      { source: '/llm.txt', destination: '/llms.txt', permanent: true },
+      { source: '/agents.md', destination: '/Agent.md', permanent: true },
+      { source: '/AGENTS.md', destination: '/Agent.md', permanent: true },
       { source: '/about', destination: '/#about', permanent: true },
       { source: '/services', destination: '/#features', permanent: true },
       { source: '/book-meeting', destination: '/#book-meeting', permanent: true },
@@ -18,10 +21,15 @@ const nextConfig = {
     ];
   },
   async headers() {
-    return ['/admin/:path*', '/auth/:path*', '/api/:path*', '/todos/:path*', '/.well-known/:path*'].map(source => ({
+    const discovery = ['/', '/blog/:path*', '/projects/:path*', '/contact', '/Agent.md'].map(source => ({
+      source,
+      headers: [{ key: 'Link', value: '</llms.txt>; rel="describedby"' }],
+    }));
+    const privateHeaders = ['/admin/:path*', '/auth/:path*', '/api/:path*', '/todos/:path*', '/.well-known/:path*'].map(source => ({
       source,
       headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' }],
     }));
+    return [...discovery, ...privateHeaders];
   },
 }
 

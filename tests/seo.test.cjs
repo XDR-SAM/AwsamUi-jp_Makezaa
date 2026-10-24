@@ -9,7 +9,7 @@ function load(file, mocks = {}) {
     module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true,
   } }).outputText;
   const module = { exports: {} };
-  vm.runInNewContext(source, { module, exports: module.exports, URL, console,
+  vm.runInNewContext(source, { module, exports: module.exports, URL, Response, console,
     require: name => Object.hasOwn(mocks, name) ? mocks[name] : require(name) }, { filename: file });
   return module.exports;
 }
@@ -104,7 +104,50 @@ test('crawler policy exposes rendering assets and lets Google read admin noindex
     assert.equal(policy.disallow.includes('/api/'), true);
   }
   assert.equal(result.rules.some(rule => rule.userAgent === 'OAI-SearchBot'), true);
+  for (const bot of ['*', 'Googlebot', 'Google-Extended', 'bingbot', 'GPTBot', 'ChatGPT-User',
+    'ClaudeBot', 'Claude-SearchBot', 'Claude-User', 'PerplexityBot', 'Perplexity-User']) {
+    const policy = result.rules.find(rule => rule.userAgent === bot);
+    assert.ok(policy, `${bot} must have a complete public policy`);
+    assert.equal(policy.allow, '/');
+    assert.ok(policy.disallow.includes('/private/'));
+  }
   assert.equal(seo.PRIVATE_ROBOTS.index, false);
+});
+
+test('AI discovery uses current business facts and real public service anchors without querying the CMS', async () => {
+  const catalog = load('lib/service-catalog.ts');
+  const discovery = load('lib/ai-discovery.ts', { './seo': seo,
+    './nav-links': { siteEmail: 'hello@makezaa.com' }, './service-catalog': catalog });
+  const index = discovery.llmsText();
+  assert.ok(index.startsWith('# Makezaa\n\n> '));
+  for (const service of catalog.serviceCatalog) {
+    assert.ok(index.includes(`https://www.makezaa.com/#service-${service.id}`));
+    assert.ok(index.includes(service.description));
+  }
+  const links = [...index.matchAll(/\]\(([^)]+)\)/g)].map(match => new URL(match[1]));
+  for (const link of links) {
+    assert.equal(link.origin, 'https://www.makezaa.com');
+    assert.ok(['/', '/projects', '/blog', '/contact', '/Agent.md', '/sitemap.xml', '/robots.txt'].includes(link.pathname));
+  }
+  assert.ok(discovery.agentText().includes('hello@makezaa.com'));
+  for (const [file, type] of [['app/llms.txt/route.ts', 'text/plain'], ['app/Agent.md/route.ts', 'text/markdown']]) {
+    const route = load(file, { '@/lib/ai-discovery': discovery });
+    const response = route.GET();
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('content-type'), `${type}; charset=utf-8`);
+    assert.equal(response.headers.get('set-cookie'), null);
+    assert.ok((await response.text()).includes('Makezaa'));
+  }
+});
+
+test('discovery headers and aliases preserve private noindex responses', async () => {
+  const { default: config } = await import('../next.config.mjs');
+  const headers = await config.headers();
+  assert.ok(headers.find(rule => rule.source === '/').headers.some(header => header.key === 'Link' && header.value.includes('rel="describedby"')));
+  assert.ok(headers.find(rule => rule.source === '/admin/:path*').headers.some(header => header.key === 'X-Robots-Tag' && header.value.includes('noindex')));
+  const redirects = await config.redirects();
+  assert.equal(redirects.find(rule => rule.source === '/llm.txt').destination, '/llms.txt');
+  assert.equal(redirects.find(rule => rule.source === '/agents.md').destination, '/Agent.md');
 });
 
 test('collection schema links exactly the visible published cards with safe canonical URLs', () => {

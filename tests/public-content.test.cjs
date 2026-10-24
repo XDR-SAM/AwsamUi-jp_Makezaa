@@ -111,7 +111,7 @@ test('public routes skip session refresh; admin, API admin and auth routes still
     '@/utils/supabase/middleware': { updateSession: async req => { checked.push(req.nextUrl.pathname); return 'protected'; } },
     'next/server': { NextResponse: { next: () => 'public' } },
   });
-  for (const path of ['/', '/projects', '/projects/example', '/blog', '/blog/example', '/contact', '/sitemap.xml', '/robots.txt', '/og/site/home'])
+  for (const path of ['/', '/projects', '/projects/example', '/blog', '/blog/example', '/contact', '/sitemap.xml', '/robots.txt', '/llms.txt', '/Agent.md', '/og/site/home'])
     assert.equal(await middleware({ nextUrl: { pathname: path } }), 'public');
   assert.equal(checked.length, 0);
   for (const path of ['/admin', '/admin/posts', '/api/admin/posts', '/auth/callback', '/todos'])

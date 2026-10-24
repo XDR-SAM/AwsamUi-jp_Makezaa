@@ -4,7 +4,7 @@ import { updateSession } from '@/utils/supabase/middleware'
 export async function middleware(request: NextRequest) {
   // Anonymous public pages never need a session refresh. Protected routes still do.
   const path = request.nextUrl.pathname;
-  if (['/', '/projects', '/blog', '/contact', '/robots.txt', '/sitemap.xml'].includes(path) || path.startsWith('/projects/') || path.startsWith('/blog/') || path.startsWith('/og/')) {
+  if (['/', '/projects', '/blog', '/contact', '/robots.txt', '/sitemap.xml', '/llms.txt', '/Agent.md'].includes(path) || path.startsWith('/projects/') || path.startsWith('/blog/') || path.startsWith('/og/')) {
     const { NextResponse } = await import('next/server');
     return NextResponse.next();
   }

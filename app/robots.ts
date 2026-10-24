@@ -6,7 +6,12 @@ export default function robots(): MetadataRoute.Robots {
   // Authentication, not robots.txt, protects the dashboard and private data.
   const policy = { allow: '/', disallow: ['/api/', '/private/'] };
   return {
-    rules: [{ userAgent: '*', ...policy }, { userAgent: 'OAI-SearchBot', ...policy }],
+    // Repeat the complete policy: named groups do not inherit wildcard rules.
+    // The wildcard also welcomes crawlers not named here, including future bots.
+    rules: ['*', 'Googlebot', 'Googlebot-Image', 'Googlebot-Video', 'Google-Extended',
+      'bingbot', 'OAI-SearchBot', 'GPTBot', 'ChatGPT-User', 'ClaudeBot',
+      'Claude-SearchBot', 'Claude-User', 'PerplexityBot', 'Perplexity-User']
+      .map(userAgent => ({ userAgent, ...policy })),
     sitemap: absoluteUrl('/sitemap.xml'),
   };
 }
